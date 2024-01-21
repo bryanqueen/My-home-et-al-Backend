@@ -8,7 +8,7 @@ const productController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
-    viewAllProducts: async (req, res) => {
+    viewProductsByCategory: async (req, res) => {
         try {
             
         } catch (error) {
@@ -29,7 +29,8 @@ const productController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
-    addIsNewTag: async (req, res) => {
+    fetchNewProducts: async (req, res) => {
+        //These are products added to the database within the timeframe of 48hrs, after 48hrs, the product can no longer be tagged a new product
         try {
             
         } catch (error) {

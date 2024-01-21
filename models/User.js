@@ -17,17 +17,24 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    role: {
+        
+    },
     wallet: {
-
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Wallet'
     },
     savedItems: [{
-        type: ''
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
     }],
     purchaseHistory: [{
-        type: ''
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order'
     }],
     notificatiions: [{
-        type: ''
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Notification'
     }],
     deliveryAddress: {
         type: String

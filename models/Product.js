@@ -16,7 +16,8 @@ const productSchema = new Schema({
         required: true
     },
     category: {
-        type: '',
+        type: String,
+        enum: ['My Appliances', ],
         required: true
     },
     description: {
@@ -30,6 +31,11 @@ const productSchema = new Schema({
     isNew: {
         type: Boolean
     },
+    inventory: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Inventory',
+        required: true
+    }
 
 });
 
