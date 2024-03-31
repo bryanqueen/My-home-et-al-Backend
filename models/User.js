@@ -17,9 +17,6 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    role: {
-        
-    },
     wallet: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Wallet'

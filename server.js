@@ -1,4 +1,10 @@
 const express = require('express');
+// const cors = require('cors');
+
+
+const date = Date.now();
+const readableDate = new Date(date);
+console.log(readableDate);
 
 
 //Initialize App

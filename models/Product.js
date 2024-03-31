@@ -16,8 +16,8 @@ const productSchema = new Schema({
         required: true
     },
     category: {
-        type: String,
-        enum: ['My Appliances', ],
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ProductCategory',
         required: true
     },
     description: {
