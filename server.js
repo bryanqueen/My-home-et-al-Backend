@@ -1,7 +1,6 @@
 const express = require('express');
-const dotenv = require('dotenv');
-dotenv.config('')
-// const cors = require('cors');
+require('dotenv').config();
+const cors = require('cors');
 
 // const randomId = crypto.randomUUID().split('')
 // console.log(randomId)
@@ -11,6 +10,7 @@ const app = express();
 
 //Middlewares
 app.use(express.json());
+app.use(cors)
 
 
 //Initialize Port
