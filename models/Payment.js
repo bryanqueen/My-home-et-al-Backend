@@ -20,6 +20,11 @@ const paymentSchema = new Schema({
         required: true,
         enum: ['Success', 'Failed', 'Pending']
     },
+    method: {
+        type: String,
+        required: true,
+        enum: ['Wallet', 'Card']
+    },
     date: {
         type: Date,
         required: true,

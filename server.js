@@ -1,11 +1,10 @@
 const express = require('express');
+const dotenv = require('dotenv');
+dotenv.config('')
 // const cors = require('cors');
 
-
-const date = Date.now();
-const readableDate = new Date(date);
-console.log(readableDate);
-
+// const randomId = crypto.randomUUID().split('')
+// console.log(randomId)
 
 //Initialize App
 const app = express();
