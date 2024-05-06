@@ -19,16 +19,26 @@ const walletSchema = new Schema({
         type: String,
         
     },
-    balance: {
+    account_no: {
         type: String,
         required: true
     },
-    totalSpent: {
-        type: String
-    },
-    transactions: [{
+    bank_name: {
         type: String,
-        enum: ['Withdrawal', 'Deposit', 'Purchase']
-    }]
+        required: true
+    }
+    // balance: {
+    //     type: String,
+    //     required: true
+    // },
+
+    // totalSpent: {
+    //     type: String
+    // },
+
+    // transactions: [{
+    //     type: String,
+    //     enum: ['Withdrawal', 'Deposit', 'Purchase']
+    // }]
 });
 module.exports = Wallet = model('Wallet', walletSchema);

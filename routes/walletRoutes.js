@@ -3,7 +3,7 @@ const router = express.Router();
 const walletController = require('../controllers/walletController');
 const authenticateUser = require('../middlewares/authenticateUsers')
 
-//Routes
+//Private Route
 router.post('/', walletController.createWallet)
 
 module.exports = router;

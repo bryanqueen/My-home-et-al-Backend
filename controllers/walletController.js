@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs')
 const walletController = {
     createWallet: async (req, res) => {
         try {
-
+            const user = req.userId
             const createWalletRoute = process.env.CREATE_WALLET_API
             
             //Wallet Details collection
@@ -21,8 +21,13 @@ const walletController = {
                 email,
                 gender,
                 date_of_birth,
-                mobile_number
+                mobile_number,
             } = req.body;
+
+            //Hash BVN
+            const saltHash = 10;
+
+            const hashedBvn = await bcrypt.hash(bvn, saltHash);
 
             const payload = {
                 display_name,
@@ -43,16 +48,14 @@ const walletController = {
                 }
             };
 
-            const saltHash = 10;
-
-            const hashedBvn = await bcrypt.hash(bvn, saltHash);
 
             const response = await axios.post(createWalletRoute, payload, config);
 
-            console.log(response.data)
+        
+            const {account_no, bank_name} = response.data.data;
 
             const wallet = new Wallet({
-                display_name,
+                user,
                 bvn: hashedBvn,
                 firstname,
                 lastname,
@@ -60,19 +63,24 @@ const walletController = {
                 email,
                 gender,
                 date_of_birth,
-                mobile_number
-            })
+                mobile_number,
+                account_no,
+                bank_name
+            });
 
+            const newWalletData = await wallet.save()
+
+            res.json({message: 'Wallet Created Successfully', newWalletData})
             
             
         } catch (error) {
             console.error(error)
-            return res.status(500).json({error: 'Ooops!! an error occured, please try again'})
+            return res.status(500).json({error: error.message})
         }
     },
     getWalletPaymentDetails: async (req, res) => {
         try {
-            const accountNumber = req.params.id;
+            
 
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please try again'})

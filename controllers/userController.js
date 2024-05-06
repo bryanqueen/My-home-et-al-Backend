@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken')
 
 const userController = {
     signUp: async (req, res) => {
@@ -38,6 +39,15 @@ const userController = {
             if(!passwordMatch){
                 return res.status(422).json({error: 'invalid email or password, please retry'})
             }
+
+            //Generate token
+            const token = jwt.sign(
+                {id: user._id},
+                process.env.JWT_SECRET,
+                {expiresIn: '6h'}
+            )
+
+            res.json({token})
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
