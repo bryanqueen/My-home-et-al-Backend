@@ -53,7 +53,7 @@ const productController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
-    viewSingleProductDetails: async (req, res) => {
+    getSingleProductDetails: async (req, res) => {
         try {
             const productId = req.params.id;
 
@@ -83,13 +83,13 @@ const productController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
-    addProductReview: async (req, res) => {
-        try {
+    // addProductReview: async (req, res) => {
+    //     try {
             
-        } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
-        }
-    },
+    //     } catch (error) {
+    //         return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+    //     }
+    // },
     editProduct: async (req, res) => {
         try {
             const productId = req.params.id;

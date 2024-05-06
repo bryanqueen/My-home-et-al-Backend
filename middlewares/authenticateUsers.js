@@ -6,11 +6,11 @@ const authenticateUser = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     
     if(!authHeader){
-        return res.status(401).json({error: 'Authorization Header is Missing'})
+        return res.status(401).json({error: 'Authorization Header is Missing'});
     }
 
     //Extract token from Authorization headers
-    const token = authHeader.split('')[1];
+    const token = authHeader.split(' ')[1];
 
     try {
         //Verify token
@@ -25,9 +25,11 @@ const authenticateUser = async (req, res, next) => {
 
         //Attach the user to the request object
         req.user = user
+        console.log(user)
 
         next()
     } catch (error) {
+        console.error(error)
         return res.status(500).json({error: 'Ooops!! an error occured, please try again'})
     }
 };

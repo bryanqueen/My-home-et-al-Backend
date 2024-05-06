@@ -7,6 +7,18 @@ const walletSchema = new Schema({
         required: true,
         ref: 'User'
     },
+    account_no: {
+        type: Number,
+        required: true
+    },
+    bvn: {
+        type: Number,
+        required: true
+    },
+    mobile_number: {
+        type: String,
+        
+    },
     balance: {
         type: String,
         required: true

@@ -46,3 +46,4 @@ const productCategoryController = {
         }
     }
 }
+module.exports = productCategoryController;
