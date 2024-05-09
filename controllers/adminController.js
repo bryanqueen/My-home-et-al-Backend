@@ -22,9 +22,11 @@ const adminController = {
                 role: adminRole
             });
 
-            await admin.save()
+            await admin.save();
+            res.json({message: 'Super Admin account Created Successfully'})
+
         } catch (error) {
-            return resizeBy.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: 'Sorry, but only one super admin account can be created'})
         }
     },
     signIn: async (req, res) => {
@@ -52,12 +54,28 @@ const adminController = {
 
             res.json({token})
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
     },
     createEmployeeAdmin: async (req, res) => {
         try {
-            const {username, email,  password} = req.body;
+            const {
+                fullname,
+                image,
+                email,
+                address,
+                phone_no,
+                gender,
+                emergency_contact_name,
+                emergency_contact_relationship,
+                emergency_contact_phone,
+                employee_id,
+                username,
+                password,
+                start_date,
+                employment_type,
+                salary,
+            } = req.body;
             //Ensuring that only Super Admin can create admin account
             if (req.admin.role !== 'Super Admin') {
                 return res.status(403).json({error: 'Only Super Admin can create Employee Admin accounts.'})
@@ -69,17 +87,29 @@ const adminController = {
             const hashedPassword = await bcrypt.hash(password, saltHash);
 
             const employeeAdmin = new Admin({
-                username,
+                fullname,
+                image,
                 email,
-                role: 'Employer Admin',
-                password: hashedPassword
+                role: 'Employee Admin',
+                password: hashedPassword,
+                address,
+                phone_no,
+                gender,
+                emergency_contact_name,
+                emergency_contact_relationship,
+                emergency_contact_phone,
+                employee_id,
+                username,
+                start_date,
+                employment_type,
+                salary,
             });
 
             await employeeAdmin.save();
 
             res.status(201).json({message: 'Employee Admin account created successfully.'})
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
     },
     getAllEmployeeAdmins: async (req, res) => {
@@ -114,7 +144,18 @@ const adminController = {
     },
     updateEmployeeAdminDetails: async (req, res) => {
         try {
-            const {username, password} = req.body;
+            const {
+                fullname,
+                image,
+                password,
+                address,
+                phone_no,
+                gender,
+                emergency_contact_name,
+                emergency_contact_relationship,
+                emergency_contact_phone,
+                username,
+            } = req.body;
 
             const EmployeeAdminId = req.params.id;
 
@@ -124,7 +165,15 @@ const adminController = {
                 return res.status(404).json({error: 'Employee Admin not found'})
             }
 
+            employeeAdmin.fullname = fullname;
             employeeAdmin.username = username;
+            employeeAdmin.image = image;
+            employeeAdmin.address = address;
+            employeeAdmin.phone_no = phone_no;
+            employeeAdmin.gender = gender;
+            employeeAdmin.emergency_contact_name = emergency_contact_name;
+            employeeAdmin.emergency_contact_relationship = emergency_contact_relationship;
+            employeeAdmin.emergency_contact_phone = emergency_contact_phone;
             //Other Additional data can come in this format.
 
             //Update Password if Provided

@@ -13,11 +13,47 @@ const adminSchema = new Schema({
     role: {
         type: String,
         required: true,
-        enum: ['Employer Admin', 'Super Admin']
+        enum: ['Employee Admin', 'Super Admin']
     },
     password: {
         type: String,
         required: true
+    },
+    fullname: {
+        type: String
+    },
+    image: {
+        type: String
+    },
+    address: {
+        type: String
+    },
+    phone_no: {
+        type: String
+    },
+    gender: {
+        type: String
+    },
+    emergency_contact_name: {
+        type: String
+    },
+    emergency_contact_relationship: {
+        type: String
+    },
+    emergency_contact_phone: {
+        type: String
+    },
+    employee_id: {
+        type: String
+    },
+    start_date: {
+        type: String
+    },
+    employment_type: {
+        type: String
+    },
+    salary: {
+        type: String
     }
 });
-module.exports = adminSchema = model('Admin', adminSchema)
+module.exports = Admin = model('Admin', adminSchema)

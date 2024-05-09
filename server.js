@@ -3,10 +3,14 @@ require('dotenv').config();
 const cors = require('cors');
 const mongoose = require('mongoose')
 const port = process.env.PORT || 4000
-const walletRoutes = require('./routes/walletRoutes')
+const walletRoutes = require('./routes/walletRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
+const productCategoryRoutes = require('./routes/productCategoryRoutes');
 
 
-const path = '/api/v1/'
+const path = '/api/v1'
 
 
 //Initialize App
@@ -32,7 +36,11 @@ app.get('/',(req, res) => {
 })
 
 //Routes Middlewares
-app.use(`${path}wallet`, walletRoutes)
+app.use(`${path}/wallet`, walletRoutes);
+app.use(`${path}/admin`, adminRoutes);
+app.use(`${path}/user`, userRoutes);
+app.use(`${path}/product`, productRoutes);
+app.use(`${path}/product-category`, productCategoryRoutes)
 
 
 

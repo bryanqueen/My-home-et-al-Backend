@@ -10,7 +10,7 @@ const authenticateAdmin = async (req, res, next) => {
     }
 
     //Extract the token from the authorization header
-    const token = authHeader.split('')[1];
+    const token = authHeader.split(' ')[1];
 
     try {
         //Verify the token
@@ -29,7 +29,8 @@ const authenticateAdmin = async (req, res, next) => {
         //Call the next middleware
         next()
     } catch (error) {
-        return res.status(500).json({error: 'Ooops!! an error occured, please try agin'})
+        console.error(error.stack)
+        return res.status(500).json({error: error.message})
     }
 };
 module.exports = authenticateAdmin;

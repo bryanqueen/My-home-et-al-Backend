@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const ProductCategory = require('../models/ProductCategory');
+const Inventory = require('../models/Inventory');
 
 const productController = {
     createSingleProduct: async (req, res) => {
@@ -9,23 +10,42 @@ const productController = {
                 price,
                 category,
                 description,
-                image,
+                images,
                 inventory
             } = req.body;
+
+            //Create a new inventory document
+            const newInventory = new Inventory({
+                productName: productTitle,
+                quantity: inventory
+            });
+
+            //Save the inventory document
+            await newInventory.save()
 
             const product = new Product({
                 productTitle,
                 price,
                 category,
                 description,
-                image,
-                inventory
+                images,
+                inventory: newInventory._id
             });
 
             await product.save();
-            res.json({message: 'Product Created Successfully'})
+
+            //Check if product category exists in the database
+            const productCategory = await ProductCategory.findById(category).populate('products');
+
+            if (productCategory) {
+                // Add the newly created product to the products array of the existing category
+                productCategory.products.push(product);
+                await productCategory.save();
+            }
+
+            res.json({message: 'Product Created Successfully'});
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
     },
     bulkCreateProduct: async (req, res) => {
@@ -35,20 +55,33 @@ const productController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
+    bulkPublishProduct: async(req, res) => {
+        try {
+            
+        } catch (error) {
+            return res.status(500).json({error: error.message})
+        }
+    },
     viewProductsByCategory: async (req, res) => {
         try {
+            //get the category id
             const categoryId = req.params.id;
-            const category = await ProductCategory.findById(categoryId);
 
-            if (!category) {
-                return res.status(404).json({error: 'Category not found'})
-            }
-            const products = await Product.find({category: categoryId});
+            //Retrieve ProductCategory by ID
+            const productCategory = await ProductCategory.findById(categoryId);
 
-            if (products.length === 0) {
-                return res.status(404).json({error: 'No products found'})
+            //Check if the ProductCategory exists
+            if(!productCategory){
+                return res.status(404).json({error: 'Product Category not found'})
             }
-            res.json(products);
+
+            //Access the product IDs from the product category product field.
+            const productIds = productCategory.products
+
+            //Fetch the Products using the productIds
+            const products = await Product.find({_id: {$in: productIds}});
+
+            res.json(products)
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }

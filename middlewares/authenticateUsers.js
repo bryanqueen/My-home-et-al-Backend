@@ -10,7 +10,7 @@ const authenticateUser = async (req, res, next) => {
     }
 
     //Extract token from Authorization headers
-    const token = authHeader.split(' ')[1];
+    const token = authHeader.split('')[1];
 
     try {
         //Verify token
