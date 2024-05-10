@@ -1,6 +1,10 @@
 const Product = require('../models/Product');
 const ProductCategory = require('../models/ProductCategory');
 const Inventory = require('../models/Inventory');
+const csv = require('csv-parser');
+const fs = require('fs');
+const multer = require('multer');
+const upload = multer({dest:'uploads'})
 
 const productController = {
     createSingleProduct: async (req, res) => {
@@ -11,7 +15,8 @@ const productController = {
                 category,
                 description,
                 images,
-                inventory
+                inventory,
+                brand
             } = req.body;
 
             //Create a new inventory document
@@ -29,7 +34,8 @@ const productController = {
                 category,
                 description,
                 images,
-                inventory: newInventory._id
+                inventory: newInventory._id,
+                brand
             });
 
             await product.save();
@@ -50,14 +56,93 @@ const productController = {
     },
     bulkCreateProduct: async (req, res) => {
         try {
+            const products = [];
+
+            upload.single('csvFile')(req, res, function (err) {
+                if (err) {
+                    return res.status(500).json({error: 'Error uploading file'})
+                }
             
+
+            fs.createReadStream(req.file.path)
+               .pipe(csv())
+               .on('data', data=> {
+                //Create product object from CSV data
+                const product = {
+                    productTitle: data.productTitle,
+                    price: data.price,
+                    category: data.category,
+                    description: data.description,
+                    images: [data.image1, data.image2, data.image3].filter(Boolean),
+                    inventory: data.inventory,
+                    brand: data.brand
+                };
+                products.push(product)
+               })
+               .on('end', () => {
+                //Send array of products as JSON response
+                res.json(products)
+               });
+
+            })
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
     },
     bulkPublishProduct: async(req, res) => {
         try {
+            //Get the array of product from the request body
+            const products = req.body;
+
+            //Create an array to store the IDs of the published products
+            const publishedProductsIds = [];
+
+            //Iterate over each product in the array
+            for (const productData of products){
+                //Find the product category document by name
+                const productCategory = await ProductCategory.findOne({name: productData.category});
+
+            // If the product category exists, replace the category name with its _id
+            if (productCategory) {
+                productData.category = productCategory._id;
+            }
+
+            //Create an inventory document for each products
+            const inventory = new Inventory({
+                productName: productData.productTitle,
+                quantity: productData.inventory
+            })
+
+            //Save the invetory document
+            await inventory.save();
             
+                //Create the product document
+                const product = new Product({
+                    productTitle: productData.productTitle,
+                    price: productData.price,
+                    category: productData.category,
+                    description: productData.description,
+                    images: productData.images,
+                    //Set the inventory to 0 initially
+                    inventory: inventory._id,
+                    brand: productData.brand
+                });
+
+                //Save the product to the database
+                const savedProduct =  await product.save();
+
+                //Push the ID of the published product to the array
+                publishedProductsIds.push(savedProduct._id);
+
+                //If the product category exists, add the product ID to its products array
+                if (productCategory){
+                    productCategory.products.push(savedProduct._id);
+                    await productCategory.save();
+                }
+            }
+
+            //Send the array of published product IDs as the response
+            res.json({ publishedProductsIds })
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
@@ -134,7 +219,7 @@ const productController = {
                     price,
                     category,
                     description,
-                    image,
+                    images,
                     inventory
                 },
                 {new: true}

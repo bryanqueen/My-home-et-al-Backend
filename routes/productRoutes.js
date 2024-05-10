@@ -5,8 +5,9 @@ const productController = require('../controllers/productController');
 const authenticateAdmin = require('../middlewares/authenticateAdmin')
 
 //Private Routes
-router.post('/', authenticateAdmin, productController.createSingleProduct);
-router.post('/', authenticateAdmin, productController.bulkCreateProduct);
+router.post('/create-product', authenticateAdmin, productController.createSingleProduct);
+router.post('/bulk-create', authenticateAdmin, productController.bulkCreateProduct);
+router.post('/bulk-publish', authenticateAdmin, productController.bulkPublishProduct)
 router.put('/:id', authenticateAdmin, productController.editProduct);
 router.delete('/:id', authenticateAdmin, productController.deleteProduct)
 

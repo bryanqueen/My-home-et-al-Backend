@@ -49,7 +49,7 @@ const adminController = {
             const token = jwt.sign(
                 {id: admin._id, email: admin.email, role: admin.role},
                 process.env.JWT_SECRET,
-                {expiresIn: '6h'}
+                {expiresIn: '100d'}
             );
 
             res.json({token})

@@ -35,6 +35,9 @@ const productSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Inventory',
         required: true
+    },
+    brand: {
+        type: String
     }
 
 });
