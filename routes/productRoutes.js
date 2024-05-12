@@ -13,7 +13,7 @@ router.delete('/:id', authenticateAdmin, productController.deleteProduct)
 
 
 //Public Routes
-router.get('/:id', productController.viewProductsByCategory);
+router.get('/category/:id', productController.viewProductsByCategory);
 router.get('/:id', productController.getSingleProductDetails);
 
 
