@@ -2,8 +2,8 @@ const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path')
 const transporter = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
+    host: "live.smtp.mailtrap.io",
+    port: 587,
     auth: {
     user: process.env.MAILTRAP_USERNAME,
     pass: process.env.MAILTRAP_PASSWORD,
@@ -25,7 +25,7 @@ const sendEmail = async (email, otp) => {
 
     //Send mail
     await transporter.sendMail({
-        from: '"My Home etal" <somtochukwuumehdaniel@gmail.com>',
+        from: '"My Home etal" <mailtrap@demomailtrap.com>',
         to: email,
         subject: 'OTP to verify your email address',
         html

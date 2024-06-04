@@ -32,11 +32,12 @@ const userController = {
                 otp,
                 otpExpiry
             });
+            
+            //send Email OTP
+            await sendEmail(email, otp)
 
             await user.save();
 
-            //send Email OTP
-            await sendEmail(email, otp)
 
             res.json({message: `We sent an OTP to ${email}, please verify `})
             
