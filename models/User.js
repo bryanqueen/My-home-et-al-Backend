@@ -3,11 +3,13 @@ const {Schema, model} = mongoose;
 
 
 const userSchema = new Schema({
-    firstName: {
-        type: String
+    firstname: {
+        type: String,
+        reqquired: true
     },
-    lastName: {
-        type: String
+    lastname: {
+        type: String,
+        required: true
     },
     email: {
         type: String,
@@ -35,6 +37,14 @@ const userSchema = new Schema({
     }],
     deliveryAddress: {
         type: String
+    },
+    otp: {
+        type: Number,
+        required: false
+    },
+    otpExpiry: {
+        type: Date,
+        required: false
     }
 
 });

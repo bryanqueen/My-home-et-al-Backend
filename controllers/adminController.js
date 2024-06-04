@@ -52,7 +52,24 @@ const adminController = {
                 {expiresIn: '100d'}
             );
 
-            res.json({token})
+            const adminProfile = {
+                id: admin._id,
+                email: admin.email,
+                role: admin.role,
+                phone_no: admin.phone_no,
+                image: admin.image,
+                address: admin.address,
+                gender: admin.gender,
+                emergency_contact_name: admin.emergency_contact_name,
+                emergency_contact_phone: admin.emergency_contact_phone,
+                emergency_contact_relationship: admin.emergency_contact_relationship,
+                username: admin.username,
+                start_date: admin.start_date,
+                employment_type: admin.employment_type,
+                salary: admin.salary
+            }
+
+            res.json({token, adminProfile})
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
@@ -122,6 +139,13 @@ const adminController = {
             //Find all Employee Admins
             const employeeAdmins = await Admin.find({role: 'Employee Admin'});
             res.json(employeeAdmins)
+        } catch (error) {
+            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+        }
+    },
+    getSingleAdminDetails: async(req, res) => {
+        try {
+            
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }

@@ -5,18 +5,33 @@ const productCategoryController = {
         try {
             const {name} = req.body;
 
-            const newProductCategory = new ProductCategory({
-                name
-            });
+            //Check if a category already exist with the same name
+            const existingProductCategory = await ProductCategory.findOne({ name });
+
+            if(existingProductCategory){
+                return res.status(400).json({error: 'A product category with this name already exixts'})
+            }
+            
+            //If the category doesn't already exist, create a new one
+            const newProductCategory = new ProductCategory({ name });
             await newProductCategory.save();
-            res.json({message: 'New product category created successfully'})
+
+            res.json({message: 'Product category successfully created'})
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
+    
     editProductCategory: async (req, res) => {
         try {
             const productCategoryId = req.params.id;
+            const {name} = req.body;
+
+            const existingProductCategory = await ProductCategory.findOne({name});
+
+            if(existingProductCategory && existingProductCategory._id.toString() !== productCategoryId){
+                return res.status(400).json({error: 'A product category with this name already exists.'})
+            }
 
             const updatedProductCategory = await ProductCategory.findByIdAndUpdate(
                 productCategoryId,

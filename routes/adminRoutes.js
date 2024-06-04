@@ -11,7 +11,9 @@ router.post('/sign-in', adminController.signIn);
 //Private routes
 router.post('/create-admin', authenticateAdmin, adminController.createEmployeeAdmin);
 router.get('/get-admins', authenticateAdmin, adminController.getAllEmployeeAdmins);
+router.get('/admins/:id', authenticateAdmin, adminController.getSingleAdminDetails);
 router.delete('/:id', authenticateAdmin, adminController.deleteEmployeeAdmin);
-router.put('/:id', authenticateAdmin, adminController.updateEmployeeAdminDetails)
+router.put('/:id', authenticateAdmin, adminController.updateEmployeeAdminDetails);
+
 
 module.exports = router;

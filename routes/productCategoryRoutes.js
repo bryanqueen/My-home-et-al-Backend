@@ -5,7 +5,8 @@ const productCategoryController = require('../controllers/productCategoryControl
 
 //Public Routes
 
+
 //Private Routes
-router.post('/', authenticateAdmin, productCategoryController.createProductCategory)
+router.post('/', authenticateAdmin, productCategoryController.createProductCategory);
 
 module.exports = router;

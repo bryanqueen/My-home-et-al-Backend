@@ -8,6 +8,8 @@ const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 const productCategoryRoutes = require('./routes/productCategoryRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+
 
 
 const path = '/api/v1'
@@ -32,7 +34,7 @@ async function connectDB() {
 }
 
 app.get('/',(req, res) => {
-    res.json('Welcome to Myhomeetal API')
+    res.send(`<h1>Welcome to MyHomeetal API</h1>`)
 })
 
 //Routes Middlewares
@@ -40,7 +42,8 @@ app.use(`${path}/wallet`, walletRoutes);
 app.use(`${path}/admin`, adminRoutes);
 app.use(`${path}/user`, userRoutes);
 app.use(`${path}/product`, productRoutes);
-app.use(`${path}/product-category`, productCategoryRoutes)
+app.use(`${path}/product-category`, productCategoryRoutes);
+app.use(`${path}/review`, reviewRoutes)
 
 
 

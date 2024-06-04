@@ -17,6 +17,19 @@ const reviewController = {
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
+    },
+    getReviews: async (req, res) => {
+        try {
+            const reviews = await Review.find();
+
+            if (!reviews) {
+                return res.status(404).json({error: 'No reviews found'})
+            }
+
+            res.json(reviews)
+        } catch (error) {
+            return res.status(500).json({error: error.message})
+        }
     }
 };
 module.exports = reviewController;

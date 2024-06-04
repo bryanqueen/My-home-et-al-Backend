@@ -100,7 +100,7 @@ const productController = {
             //Iterate over each product in the array
             for (const productData of products){
                 //Find the product category document by name
-                const productCategory = await ProductCategory.findOne({name: productData.category});
+                const productCategory = await ProductCategory.findOne({name: productData.category.lowerCase()});
 
             // If the product category exists, replace the category name with its _id
             if (productCategory) {
