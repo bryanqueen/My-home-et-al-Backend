@@ -19,17 +19,13 @@ const orderSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['Completed', 'Pending', 'Failed', 'Confirmed']
+        enum: ['Pending', 'Ongoing', 'Delivered']
     },
     address: {
         type: String,
         required: true
     },
     orderPrice: {
-        type: String,
-        required: true
-    },
-    totalPrice: {
         type: String,
         required: true
     },
