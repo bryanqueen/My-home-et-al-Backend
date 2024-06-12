@@ -4,8 +4,9 @@ const Inventory = require('../models/Inventory');
 const csv = require('csv-parser');
 const fs = require('fs');
 const multer = require('multer');
-const uploadCsv = multer({dest:'uploads/csv'})
-// const uploadProductImages = multer({dest: 'uploads/products'})
+const uploadCsv = multer({dest:'uploads/csv'});
+const cloudinary = require('../config/cloudinary')
+
 
 const productController = {
     createSingleProduct: async (req, res) => {
@@ -16,10 +17,23 @@ const productController = {
                 price,
                 category,
                 description,
-                images,
                 inventory,
                 brand
             } = req.body;
+
+            const imageFiles = req.files;
+
+            const uploadedImageUrls = [];
+            
+            for (const file of imageFiles) {
+                // Upload each file to Cloudinary
+                const result = await cloudinary.uploader.upload(file.path);
+                uploadedImageUrls.push(result.secure_url);
+          
+                // Remove the file from the local uploads folder
+                fs.unlinkSync(file.path);
+              }
+          
 
             //Create a new inventory document
             const newInventory = new Inventory({
@@ -35,7 +49,7 @@ const productController = {
                 price,
                 category,
                 description,
-                images,
+                images: uploadedImageUrls,
                 inventory: newInventory._id,
                 brand
             });

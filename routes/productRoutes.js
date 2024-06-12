@@ -2,10 +2,11 @@ const express = require('express');
 const {Router} = express;
 const router = Router();
 const productController = require('../controllers/productController');
-const authenticateAdmin = require('../middlewares/authenticateAdmin')
+const authenticateAdmin = require('../middlewares/authenticateAdmin');
+const upload = require('../config/multer')
 
 //Private Routes
-router.post('/create-product', authenticateAdmin, productController.createSingleProduct);
+router.post('/create-product', authenticateAdmin, upload.array('images', 10), productController.createSingleProduct);
 router.post('/bulk-create', authenticateAdmin, productController.bulkCreateProduct);
 router.post('/bulk-publish', authenticateAdmin, productController.bulkPublishProduct)
 router.put('/:id', authenticateAdmin, productController.editProduct);
