@@ -45,6 +45,9 @@ const userSchema = new Schema({
     otpExpiry: {
         type: Date,
         required: false
+    },
+    isVerified: {
+        type: Boolean,
     }
 
 });

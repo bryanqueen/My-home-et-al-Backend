@@ -36,7 +36,8 @@ const userController = {
             //send Email OTP
             await sendEmail(email, otp)
 
-            await user.save();
+            user.isVerified = false;
+            await user.save(); 
 
 
             res.json({message: `We sent an OTP to ${email}, please verify `})
@@ -65,9 +66,40 @@ const userController = {
             //If OTP is valid, clear OTP and OTP EXPIRY
             user.otp = null;
             user.otpExpiry = null;
+            user.isVerified = true
             await user.save();
 
             res.json({message: 'OTP verifed successfully'})
+        } catch (error) {
+            return res.status(500).json({error: error.message})
+        }
+    },
+    resendOtp: async(req, res) => {
+        try {
+            const {email} = req.body;
+
+            //Check if user exists with the email
+            const existingUser = await User.findOne({email});
+
+            if(!existingUser){
+                return res.status(404).json({error: 'User does not exist'})
+            }
+
+            //If User exists, regenerate 5-digit otp
+            const otp = crypto.randomInt(10000, 100000);
+            const otpExpiry = Date.now() + 10 * 60 * 1000;
+
+            //Resend Mail
+            await sendEmail(email, otp)
+
+            //Set the New Otp and it's expiry time
+            existingUser.otp = otp;
+            existingUser.otpExpiry = otpExpiry;
+
+            //Re-save User to the database
+            await existingUser.save()
+
+
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
@@ -86,6 +118,10 @@ const userController = {
 
             if(!passwordMatch){
                 return res.status(422).json({error: 'invalid email or password, please retry'})
+            }
+
+            if(user.isVerified !== true){
+                return res.status(422).json({error: 'User email has not been verified'})
             }
 
             //Generate token

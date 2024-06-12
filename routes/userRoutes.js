@@ -7,6 +7,7 @@ const authenticateUser = require('../middlewares/authenticateUsers');
 router.post('/sign-up', userController.signUp);
 router.post('/sign-in', userController.signIn);
 router.post('/verify-otp', userController.verifyOtp);
+router.post('/resend-otp', userController.resendOtp)
 
 
 //Private Routes
