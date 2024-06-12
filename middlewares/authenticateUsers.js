@@ -10,7 +10,7 @@ const authenticateUser = async (req, res, next) => {
     }
 
     //Extract token from Authorization headers
-    const token = authHeader.split('')[1];
+    const token = authHeader.split(' ')[1];
 
     try {
         //Verify token
@@ -30,7 +30,7 @@ const authenticateUser = async (req, res, next) => {
         next()
     } catch (error) {
         console.error(error)
-        return res.status(500).json({error: 'Ooops!! an error occured, please try again'})
+        return res.status(500).json({error: error.message})
     }
 };
 module.exports = authenticateUser;

@@ -161,7 +161,7 @@ const userController = {
     },
     viewAccountProfile: async (req, res) => {
         try {
-            const userId = req.userId;
+            const userId = req.user._id
             const profile = await User.findById(userId);
 
             if (!profile) {

@@ -145,7 +145,14 @@ const adminController = {
     },
     getSingleAdminDetails: async(req, res) => {
         try {
-            
+            const adminId = req.admin._id;
+
+            const adminProfile = await Admin.findById(adminId);
+
+            if(!adminProfile){
+                return res.status(404).json({error: 'Admin Profile not found'})
+            }
+            res.json(adminProfile)
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }

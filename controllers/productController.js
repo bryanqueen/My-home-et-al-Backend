@@ -4,11 +4,13 @@ const Inventory = require('../models/Inventory');
 const csv = require('csv-parser');
 const fs = require('fs');
 const multer = require('multer');
-const upload = multer({dest:'uploads'})
+const uploadCsv = multer({dest:'uploads/csv'})
+// const uploadProductImages = multer({dest: 'uploads/products'})
 
 const productController = {
     createSingleProduct: async (req, res) => {
         try {
+            
             const {
                 productTitle,
                 price,
@@ -58,7 +60,7 @@ const productController = {
         try {
             const products = [];
 
-            upload.single('csvFile')(req, res, function (err) {
+            uploadCsv.single('csvFile')(req, res, function (err) {
                 if (err) {
                     return res.status(500).json({error: 'Error uploading file'})
                 }

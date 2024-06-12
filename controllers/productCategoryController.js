@@ -3,7 +3,7 @@ const ProductCategory = require('../models/ProductCategory');
 const productCategoryController = {
     createProductCategory: async (req, res) => {
         try {
-            const {name} = req.body;
+            const {name, image} = req.body;
 
             //Check if a category already exist with the same name
             const existingProductCategory = await ProductCategory.findOne({ name });
