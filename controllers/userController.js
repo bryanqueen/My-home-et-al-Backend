@@ -264,14 +264,22 @@ const userController = {
     },
     deleteAccount: async (req, res) => {
         try {
+
+            const {password} = req.body;
             const userId = req.userId;
 
-            const profile = await User.findByIdAndDelete(userId);
+            const profile = await User.findById(userId);
 
             if (!profile){
                 return res.status(404).json({error: 'Not Found'})
             }
-            res.json({message: 'Deletion Completed'})
+            if(profile.password !== password){
+                return res.status(400).json({error: 'Invalid Password'})
+            }
+            
+            await User.findByIdAndDelete(userId);
+            res.json({message: 'Account Deleted Successfully'})
+            
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }

@@ -12,51 +12,47 @@ const productController = {
     createSingleProduct: async (req, res) => {
         try {
             
-            const {
-                productTitle,
-                price,
-                category,
-                description,
-                inventory,
-                brand
+            const { 
+                productTitle, 
+                price, 
+                category, 
+                description, 
+                inventory, 
+                brand 
             } = req.body;
 
-            const imageFiles = req.files;
-
-            const uploadedImageUrls = [];
-            
-            for (const file of imageFiles) {
-                // Upload each file to Cloudinary
-                const result = await cloudinary.uploader.upload(file.path);
-                uploadedImageUrls.push(result.secure_url);
-          
-                // Remove the file from the local uploads folder
-                fs.unlinkSync(file.path);
-              }
-          
-
-            //Create a new inventory document
-            const newInventory = new Inventory({
-                productName: productTitle,
-                quantity: inventory
+            // Create a new inventory document
+            const newInventory = new Inventory({ 
+                productName: productTitle, 
+                quantity: Number(inventory) 
             });
 
-            //Save the inventory document
-            await newInventory.save()
+            // Save the inventory document
+            await newInventory.save();
 
-            const product = new Product({
-                productTitle,
-                price,
-                category,
-                description,
-                images: uploadedImageUrls,
-                inventory: newInventory._id,
-                brand
+            // Upload images to Cloudinary
+            const uploadPromises = req.files.map(file => {
+                return cloudinary.uploader.upload(file.path, {
+                    folder: 'product_images'
+                });
+            });
+
+            const imageResults = await Promise.all(uploadPromises);
+            const imageUrls = imageResults.map(result => result.secure_url);
+
+            const product = new Product({ 
+                productTitle, 
+                price, 
+                category, 
+                description, 
+                images: imageUrls, 
+                inventory: newInventory._id, 
+                brand 
             });
 
             await product.save();
 
-            //Check if product category exists in the database
+            // Check if product category exists in the database
             const productCategory = await ProductCategory.findById(category).populate('products');
 
             if (productCategory) {
@@ -65,7 +61,9 @@ const productController = {
                 await productCategory.save();
             }
 
-            res.json({message: 'Product Created Successfully'});
+            res.json({ message: 'Product Created Successfully' });
+
+           
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
