@@ -12,10 +12,10 @@ const transporter = nodemailer.createTransport({
 
 
     
-const sendEmail = async (email, otp) => {
+const sendVerificationEmail = async (email, otp) => {
     
     // Read the HTML template
-    const templatePath = path.join(__dirname, 'otpEmail.html');
+    const templatePath = path.join(__dirname, 'OtpVerification.html');
     let html = fs.readFileSync(templatePath, 'utf8');
 
     // Replace the placeholder with the actual OTP
@@ -33,4 +33,4 @@ const sendEmail = async (email, otp) => {
     });
     
 }
-module.exports = sendEmail;
+module.exports = sendVerificationEmail;

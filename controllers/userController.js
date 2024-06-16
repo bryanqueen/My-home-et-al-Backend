@@ -2,7 +2,8 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const sendEmail = require('../utils/sendEmail');
+const sendVerificationEmail = require('../utils/sendVerificationEmail');
+
 
 const userController = {
     signUp: async (req, res) => {
@@ -34,7 +35,7 @@ const userController = {
             });
             
             //send Email OTP
-            await sendEmail(email, otp)
+            await sendVerificationEmail(email, otp)
 
             user.isVerified = false;
             await user.save(); 
@@ -90,7 +91,7 @@ const userController = {
             const otpExpiry = Date.now() + 10 * 60 * 1000;
 
             //Resend Mail
-            await sendEmail(email, otp)
+            await sendVerificationEmail(email, otp)
 
             //Set the New Otp and it's expiry time
             existingUser.otp = otp;
@@ -102,6 +103,67 @@ const userController = {
 
         } catch (error) {
             return res.status(500).json({error: error.message})
+        }
+    },
+    forgotPassword: async (req, res) => {
+        try {
+            const {email} = req.body;
+
+            const user = await User.findOne({email});
+
+            if(!user){
+                return res.status(404).json({error: 'User does not exist'})
+            }
+
+            //If User exists, generate 5-digit otp
+            const otp = crypto.randomInt(10000, 100000);
+            const otpExpiry = Date.now() + 10 * 60 * 1000;
+
+            //Send mail
+            await sendEmail(email, otp);
+
+            //Set the New OTP and it's expiry time
+            user.otp = otp;
+            user.otpExpiry = otpExpiry;
+
+            //Save newly added Otp
+            await user.save();
+            res.json({message: `An OTP has been sent to ${email}`})
+
+        } catch (error) {
+            return res.status(500).json({error: error.message})
+        }
+    },
+    resetPassword: async (req, res) => {
+        try {
+            const {email, otp, password} = req.body;
+            
+            const user = await User.findOne({email});
+
+            if(!user){
+                return res.status(404).json({error: 'User not found'})
+            };
+            if(user.otp !== parseInt(otp)){
+                return res.status(400).json({error: 'Invalid OTP'})
+            }
+            if (Date.now() > user.otpExpiry) {
+                return res.status(400).json({error: 'OTP expired'})
+            }
+
+            const saltHash = 12
+
+            const hashNewPassword = await bcrypt.hash(password, saltHash);
+
+            user.password = hashNewPassword;
+            user.otp = null;
+            user.otpExpiry = null;
+
+            await user.save()
+
+            res.json({message: 'Password updated successfully'})
+
+        } catch (error) {
+            return res.status()
         }
     },
     signIn: async (req, res) => {
