@@ -1,9 +1,10 @@
 const ProductCategory = require('../models/ProductCategory');
+const cloudinary = require('cloudinary').v2
 
 const productCategoryController = {
     createProductCategory: async (req, res) => {
         try {
-            const {name, image} = req.body;
+            const {name} = req.body;
 
             //Check if a category already exist with the same name
             const existingProductCategory = await ProductCategory.findOne({ name });
@@ -11,9 +12,21 @@ const productCategoryController = {
             if(existingProductCategory){
                 return res.status(400).json({error: 'A product category with this name already exixts'})
             }
+            //Upload Category Image to Cloudinary
+            const uploadPromise = req.files.map(file => {
+                return cloudinary.uploader.upload(file.path, {
+                    folder: 'product_catgeory_images'
+                });
+            });
+
+            const imageResult = await Promise.all(uploadPromise);
+            const imageUrl = imageResult.map(result => result.secure_url)
             
             //If the category doesn't already exist, create a new one
-            const newProductCategory = new ProductCategory({ name });
+            const newProductCategory = new ProductCategory({ 
+                name,
+                product_category_image: imageUrl
+             });
             await newProductCategory.save();
 
             res.json({message: 'Product category successfully created'})
@@ -33,9 +46,22 @@ const productCategoryController = {
                 return res.status(400).json({error: 'A product category with this name already exists.'})
             }
 
+            //Upload Category Image to Cloudinary
+            const uploadPromise = req.files.map(file => {
+                return cloudinary.uploader.upload(file.path, {
+                    folder: 'product_category_images'
+                });
+            });
+
+            const imageResult = await promises.all(uploadPromise);
+            const imageUrl = imageResult.map(result => result.secure_url)
+
             const updatedProductCategory = await ProductCategory.findByIdAndUpdate(
                 productCategoryId,
-                {name},
+                { 
+                    name,
+                    product_category_image: imageUrl
+                },
                 {new: true}
             );
             if (!updatedProductCategory) {
