@@ -1,6 +1,8 @@
 const Admin = require('../models/Admin');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const User = require('../models/User')
+
 
 const adminController = {
     signUp: async (req, res) => {
@@ -171,6 +173,14 @@ const adminController = {
             res.json({message: 'Employee Admin account deleted Successfully'})
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please try again'})
+        }
+    },
+    fetchAllUsers: async (req, res) => {
+        try {
+            const users = await User.find();
+            res.json(users)
+        } catch (error) {
+            return res.status(500).json({error: 'Server error'})
         }
     },
     updateEmployeeAdminDetails: async (req, res) => {

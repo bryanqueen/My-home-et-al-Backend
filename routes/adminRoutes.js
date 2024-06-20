@@ -15,5 +15,8 @@ router.get('/admins/:id', authenticateAdmin, adminController.getSingleAdminDetai
 router.delete('/:id', authenticateAdmin, adminController.deleteEmployeeAdmin);
 router.put('/:id', authenticateAdmin, adminController.updateEmployeeAdminDetails);
 
+//Extended Routes(private)
+router.get('/all-users', authenticateAdmin, adminController.fetchAllUsers)
+
 
 module.exports = router;

@@ -185,6 +185,18 @@ const productController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
+    fetchAllProducts: async (req, res) => {
+        try {
+            const totalProducts = await Product.find();
+            
+            if(!totalProducts){
+                return res.status(400).json({error: 'No products found'})
+            }
+            res.json(totalProducts)
+        } catch (error) {
+            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+        }
+    },
     getSingleProductDetails: async (req, res) => {
         try {
             const productId = req.params.id;
@@ -215,13 +227,7 @@ const productController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
-    // addProductReview: async (req, res) => {
-    //     try {
-            
-    //     } catch (error) {
-    //         return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
-    //     }
-    // },
+   
     editProduct: async (req, res) => {
         try {
             const productId = req.params.id;
