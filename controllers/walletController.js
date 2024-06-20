@@ -15,9 +15,6 @@ const walletController = {
             const {
                 display_name,
                 bvn,
-                // firstname,
-                // lastname,
-                // currency,
                 email,
                 gender,
                 date_of_birth,
