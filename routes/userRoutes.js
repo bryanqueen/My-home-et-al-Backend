@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController')
 const authenticateUser = require('../middlewares/authenticateUsers');
-const authenticateAdmin = require('../middlewares/authenticateAdmin');
+
 
 //Public Routes
 router.post('/sign-up', userController.signUp);
 router.post('/sign-in', userController.signIn);
 router.post('/verify-otp', userController.verifyOtp);
 router.post('/resend-otp', userController.resendOtp);
+router.get('/product-categories', userController.getProductCategories)
 
 
 

@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs')
 const walletController = {
     createWallet: async (req, res) => {
         try {
-            const user = req.userId
+            const user = req.user._id
             const createWalletRoute = process.env.CREATE_WALLET_API
             
             //Wallet Details collection
@@ -50,6 +50,7 @@ const walletController = {
 
         
             const {account_no, bank_name} = response.data.data;
+            const {balance} = response.data.data.balance;
 
             const wallet = new Wallet({
                 user,
@@ -62,7 +63,8 @@ const walletController = {
                 date_of_birth,
                 mobile_number,
                 account_no,
-                bank_name
+                bank_name,
+                balance
             });
 
             const newWalletData = await wallet.save()
@@ -82,7 +84,8 @@ const walletController = {
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please try again'})
         }
-    }
+    },
+
 }
 
 module.exports = walletController;

@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const ProductCategory = require('../models/ProductCategory');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -283,6 +284,18 @@ const userController = {
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
-    }
+    },
+    getProductCategories: async (req, res) => {
+        try {
+            const productCategories = await ProductCategory.find();
+
+            if(!productCategories){
+                return res.status(404).json({error: 'No Product Category found'})
+            }
+            res.json(productCategories)
+        } catch (error) {
+            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+        }
+    },
 }
 module.exports = userController;

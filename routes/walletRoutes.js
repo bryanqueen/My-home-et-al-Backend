@@ -4,6 +4,6 @@ const walletController = require('../controllers/walletController');
 const authenticateUser = require('../middlewares/authenticateUsers')
 
 //Private Route
-router.post('/', walletController.createWallet)
+router.post('/create/:id', walletController.createWallet)
 
 module.exports = router;

@@ -11,8 +11,12 @@ const paymentSchema = new Schema({
         ref: 'User',
         required: true
     },
+    order: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order'
+    },
     amount: {
-        type: String,
+        type: Number,
         required: true
     },
     status: {

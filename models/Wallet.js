@@ -26,19 +26,20 @@ const walletSchema = new Schema({
     bank_name: {
         type: String,
         required: true
-    }
-    // balance: {
-    //     type: String,
-    //     required: true
-    // },
-
+    },
+    balance: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    transactions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Transaction'
+        
+    }],
     // totalSpent: {
     //     type: String
-    // },
+    // }
 
-    // transactions: [{
-    //     type: String,
-    //     enum: ['Withdrawal', 'Deposit', 'Purchase']
-    // }]
 });
 module.exports = Wallet = model('Wallet', walletSchema);

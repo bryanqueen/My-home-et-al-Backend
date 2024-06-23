@@ -4,12 +4,12 @@ const Order = require('../models/Order');
 const orderController = {
     createOrder: async (req, res) => {
         try {
-            const user = req.userId;
+            const user = req.user._id
             const { address, 
-                    orderPrice,
-                    totalPrice, 
+                    orderPrice, 
                     orderItems, 
-                    deliveryMethod
+                    deliveryMethod,
+                    paymentMethod
                   } = req.body;
             const newOrder = new Order({
                 user,
@@ -17,7 +17,8 @@ const orderController = {
                 orderPrice,
                 totalPrice,
                 orderItems,
-                deliveryMethod
+                deliveryMethod,
+                paymentMethod
             });
             await newOrder.save();
             res.json({message: 'Order Created Successfully'})

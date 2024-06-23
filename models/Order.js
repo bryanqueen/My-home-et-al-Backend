@@ -36,6 +36,11 @@ const orderSchema = new Schema({
         type: String,
         enum: ['Door delivery', 'Pickup delivery'],
         required: true
+    },
+    paymentMethod: {
+        type: String,
+        enum: ['Wallet', 'Online'],
+        required: true
     }
 });
 module.exports = Order = model('Order', orderSchema);

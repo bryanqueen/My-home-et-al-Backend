@@ -34,6 +34,19 @@ const productCategoryController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
+
+    getProductCategories: async (req, res) => {
+        try {
+            const productCategories = await ProductCategory.find();
+
+            if(!productCategories){
+                return res.status(404).json({error: 'No Product Category found'})
+            }
+            res.json(productCategories)
+        } catch (error) {
+            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+        }
+    },
     
     editProductCategory: async (req, res) => {
         try {
