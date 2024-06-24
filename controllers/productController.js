@@ -256,12 +256,21 @@ const productController = {
         try {
             const productId = req.params.id;
 
-            const deletedProduct = await Product.findByIdAndDelete(productId);
+            //Find the Product to get it's inventory
+            const product = await Product.findById(productId);
 
-            if (!deletedProduct) {
-                return res.status(404).json({error: 'Product not found'});
-            };
-            res.json({message: 'Deletion completed'})
+            if(!product){
+                return res.status(404).json({error: 'Product not found'})
+            }
+
+            //First delete the inventory associated with the product
+            const inventoryId = product.inventory;
+            await Inventory.findByIdAndDelete(inventoryId);
+
+            //Delete the product itself
+            await Product.findByIdAndDelete(productId);
+
+            res.json({message: 'Product deleted successfully'})
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }

@@ -54,6 +54,9 @@ const adminSchema = new Schema({
     },
     salary: {
         type: String
+    },
+    position: {
+        type: String
     }
 });
 module.exports = Admin = model('Admin', adminSchema)

@@ -68,7 +68,8 @@ const adminController = {
                 username: admin.username,
                 start_date: admin.start_date,
                 employment_type: admin.employment_type,
-                salary: admin.salary
+                salary: admin.salary,
+                position: admin.position
             }
 
             res.json({token, adminProfile})
@@ -91,6 +92,7 @@ const adminController = {
                 employee_id,
                 username,
                 password,
+                position,
                 start_date,
                 employment_type,
                 salary,
@@ -119,6 +121,7 @@ const adminController = {
                 emergency_contact_phone,
                 employee_id,
                 username,
+                position,
                 start_date,
                 employment_type,
                 salary,
@@ -196,6 +199,7 @@ const adminController = {
                 emergency_contact_relationship,
                 emergency_contact_phone,
                 username,
+                position
             } = req.body;
 
             const EmployeeAdminId = req.params.id;
@@ -215,6 +219,7 @@ const adminController = {
             employeeAdmin.emergency_contact_name = emergency_contact_name;
             employeeAdmin.emergency_contact_relationship = emergency_contact_relationship;
             employeeAdmin.emergency_contact_phone = emergency_contact_phone;
+            employeeAdmin.position = position;
             //Other Additional data can come in this format.
 
             //Update Password if Provided

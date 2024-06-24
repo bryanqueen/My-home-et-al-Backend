@@ -1,5 +1,7 @@
 const ProductCategory = require('../models/ProductCategory');
-const cloudinary = require('cloudinary').v2
+const cloudinary = require('cloudinary').v2;
+const Product = require('../models/Product');
+const Inventory = require('../models/Inventory');
 
 const productCategoryController = {
     createProductCategory: async (req, res) => {
@@ -89,12 +91,31 @@ const productCategoryController = {
         try {
             const productCategoryId = req.params.id;
 
-            const deletedProductCategory = await ProductCategory.findByIdAndDelete(productCategoryId);
+            //Find the ProductCategory to get the products appended to it
+            const productCategory = await ProductCategory.findById(productCategoryId);
 
-            if(!deletedProductCategory){
-                return res.status(404).json({error: 'Product Category not found'})
+            //Get the list of products associated with this category
+            const productIds = productCategory.products;
+
+            //Loop through the product and delete it alongside it's inventory
+            for (const productId of productIds) {
+                const product = await Product.findById(productId)
+
+                if(product){
+
+                    //Find Product Inventory and delete
+                    await Inventory.findByIdAndDelete(product.inventory);
+
+                    //Then delete the Product itself
+                    await Product.findByIdAndDelete(productId)
+                }
+                
             }
-            res.json({message: 'Product Category deleted'})
+
+            //Delete the Product Category itself
+            await ProductCategory.findByIdAndDelete(productCategoryId)
+
+            res.json({message: 'Product Category and all associated products and inventories deleted'})
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
