@@ -1,0 +1,103 @@
+productTitle,price,category,description,image1,image2,inventory,brand
+Smartphone,150000,Electronics,High-quality smartphone with advanced features,https://m.media-amazon.com/images/I/61oAnIYKPVL._AC_SL1500_.jpg,https://images-cdn.ubuy.co.in/634d031dba8fe623b47893cc-smart-phone-android-8-1-smartphone-hd.jpg,50,Samsung
+Laptop,300000,Electronics,Powerful laptop for work and entertainment,"https://media.wired.com/photos/64daad6b4a854832b16fd3bc/16:9/w_2400,h_1350,c_limit/How-to-Choose-a-Laptop-August-2023-Gear.jpg",,30,ComputeTech
+Tablet,100000,Electronics,Portable tablet for on-the-go computing,https://cdn.thewirecutter.com/wp-content/media/2023/11/androidtablets-2048px-05895.jpg?auto=webp&quality=75&width=1024,,40,TabTech
+Smartwatch,50000,Electronics,Advanced smartwatch with fitness tracking,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_iKOU0I878i9GcABCRvuLRtk9Tw41XZLZ9A&s,,60,WearableTech
+Bluetooth Speaker,20000,Electronics,Portable speaker with high-quality sound,https://images-cdn.ubuy.co.in/633ff668d5bfc656c91eef1a-bluetooth-speaker-60w80w-peak-booming.jpg,,75,SoundMaster
+Headphones,25000,Electronics,Comfortable headphones with noise cancellation,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGtSF57VY9AWkYavK_Qdn5I6wN0om4IO-zuw&s,,80,AudioPro
+Digital Camera,200000,Electronics,High-resolution camera for professional photography,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ1fCYV1Zy-9q2YVoakvxsFdmU1ejEQM1BhQ&s,,25,PixelPerfect
+LED TV,180000,Electronics,Large LED TV with crisp picture quality,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3o1kevUEvl10zh3rwYIfCo4W2YHz78zqEIQ&s,,20,ViewMax
+Game Console,250000,Electronics,Next-gen gaming console for immersive gameplay,https://i5.walmartimages.com/seo/Double-Joystick-Handheld-Game-Console-Build-in-Games-Video-Game-Console_19e10983-3fb8-4403-aa51-f5ce30de300f.51f5a3d926acce56f9eb997a1758c221.jpeg,,15,GameMaster
+External Hard Drive,15000,Electronics,Reliable external storage for data backup,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOdjDRBDFjSV2hlIYQotNrx0VF869gztOqrg&s,,100,DataSafe
+Refrigerator,200000,Home Appliances,Spacious refrigerator with energy-saving features,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCfeIwyt9cNPV8xGaGiPLGtimSIV5kRlgLIg&s,,20,CoolHome
+Washing Machine,150000,Home Appliances,Efficient washing machine for easy laundry,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2loSHnlD7y-Z8bgz778FT6HFvI9K-ULq5hA&s,,25,CleanPro
+Microwave Oven,50000,Home Appliances,Versatile microwave for quick cooking,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1sol3uw2okriC4b8IpV5O4o6IDJR8IJkEGQ&s,,40,QuickCook
+Air Conditioner,180000,Home Appliances,Powerful air conditioner for home cooling,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1QrYzUAdr2PzRFQYunW1qiIv8NyrJ5BAXAg&s,,30,ChillAir
+Electric Kettle,10000,Home Appliances,Fast-boiling electric kettle for convenience,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTic26PUjc3x0yKUlAW_0FX2vX_no66mGVWKA&s,,60,BoilQuick
+Blender,15000,Home Appliances,Multi-function blender for smoothies and more,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgxfbI7OC-vISlN6hPPeqfU_cEHK_4WCOnkQ&s,,50,BlendMaster
+Gas Cooker,70000,Home Appliances,Reliable gas cooker for home cooking,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNMSn6c92SbotCJpxGQUs84a0GDJ2f4pJIrA&s,,35,CookPro
+Vacuum Cleaner,30000,Home Appliances,Efficient vacuum cleaner for thorough cleaning,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQopAR6wEnRh4_-LvLyYw7PLB_KxrtpAGjyCA&s,,45,CleanSweep
+Water Dispenser,25000,Home Appliances,Convenient water dispenser for home or office,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVrZjNDFBq4DWwScP6jO0pJ_YZr8CJoKPxEw&s,,55,AquaFresh
+Iron,8000,Home Appliances,Durable iron for wrinkle-free clothes,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqfpTqeqbZrx_tiiCGK3FlYhFuFhAH21T6hA&s,,70,SmoothPress
+Sofa Set,300000,Furniture,Comfortable and stylish sofa set for your living room,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJr_IOWUspkCosQ1zTBFNjd9mnuoIdj56NcQ&s,,15,ComfyLiving
+Dining Table,120000,Furniture,Elegant dining table for family meals,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIwTSMqrt2sAUt2q8NJFizT1MXREoZs0E7EA&s,,25,DineElegant
+Bed Frame,100000,Furniture,Sturdy bed frame for a good night's sleep,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOuZP5o3LSVVBfnSsioXkxx35a_AzGQX-sDA&s,,30,SleepWell
+Wardrobe,80000,Furniture,Spacious wardrobe for organized storage,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I9Q861j94RJKnJs5Xqea3EFcESjR8LaM2A&s,,35,StorageStyle
+Office Chair,25000,Furniture,Ergonomic office chair for comfortable work,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq6fUKEixS-UBp6p-TDqaXb4KAiU2NaeQwIw&s,,50,ErgoComfort
+Coffee Table,30000,Furniture,Stylish coffee table for your living room,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2yxQllnzJEk04B3j7mwd5UXcqB1nBOW1qIQ&s,,40,ModernLiving
+Bookshelf,40000,Furniture,Functional bookshelf for organized display,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJO2fGYsKrPqWQTLlCRtqc4njr-zzktFeHZg&s,,45,BookNest
+TV Stand,35000,Furniture,Modern TV stand with storage options,https://m.media-amazon.com/images/I/81JpoBT1emL._AC_SL1500_.jpg,,55,ViewStyle
+Dressing Table,45000,Furniture,Elegant dressing table with mirror,https://www.coxandcox.co.uk/media/catalog/product/s/s/ss23-1234734-1234885_1.jpg?quality=80&fit=bounds&height=800&width=800,,30,GlamourSpace
+Recliner Chair,60000,Furniture,Comfortable recliner for relaxation,https://m.media-amazon.com/images/I/51ws7fcNEmL._AC_US750_.jpg,,20,RelaxMax
+T-shirt,5000,Clothing,Casual and comfortable t-shirt for everyday wear,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlmE3CNEIYOb2iRsAjqyktRsPeQ5T4b_2ZVA&s,,200,CasualWear
+Jeans,8000,Clothing,Durable and stylish jeans for all occasions,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPvHcOxrwkYyvOw-C1NWvRgZ8nd-ib-Y3H_Q&s,,150,DenimStyle
+Jacket,12000,Clothing,Versatile jacket for layering and protection,https://m.media-amazon.com/images/I/710Apfl+y6L._AC_SL1500_.jpg,,100,OuterwearPro
+Dress,10000,Clothing,Elegant dress for special occasions,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTR_-wzP00gsILtfSX7P7UnWfXAlrhFKIQUrw&s,,120,GlamourGirl
+Suit,20000,Clothing,Professional suit for formal events,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC_AWHqq2h6XMqleK2JZKVIfix1-n-GhmGVA&s,,80,FormalFit
+Skirt,6000,Clothing,Stylish skirt for versatile outfits,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTblP_L8uNmyK9DK--BTsRQoyvRHncS2ALdxA&s,,130,ChicStyle
+Sneakers,15000,Clothing,Comfortable sneakers for active lifestyles,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyIxzXVut-Ri2IUiXCKAOTG-vXkpm6GqXtfw&s,,90,ActiveStep
+Sandals,7000,Clothing,Casual sandals for warm weather,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqJyXE0drs-d8NdUmqfolma2rMc-JiwgAcJQ&s,,110,SummerStride
+Blouse,5000,Clothing,Feminine blouse for work or casual wear,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmQMZowoaCaifwHLIwyVpeTaj5Oabn25AR6A&s,,140,ElegantTop
+Shorts,4000,Clothing,Comfortable shorts for casual wear,https://www.bn3th.com/cdn/shop/files/ss23-sport-runners-high-short-black-M521012-028-front.jpg?v=1695670500,,160,CoolComfort
+Foundation,5000,Beauty Products,Long-lasting foundation for flawless coverage,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZTxSIqI_wJhW-xtQL8KDnpcyORROMzRos_g&s,,75,GlowBeauty
+Lipstick,3000,Beauty Products,Vibrant lipstick for a pop of color,https://pyxis.nymag.com/v1/imgs/4cd/b96/07ab7833b6c043aa3264cab69b7dcce0b4-lipstick-29.rsquare.w600.jpg,,100,ColorPop
+Mascara,4000,Beauty Products,Volumizing mascara for dramatic lashes,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuucV_yIrhm8GVKFf7rGCP2v1_5kVkP7DCaQ&s,,90,LashMagic
+Face Cream,6000,Beauty Products,Nourishing face cream for healthy skin,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKIInxjUXD6y-TUZZniIWc5rPycGjcRNT_Dw&s,,80,SkinNourish
+Perfume,10000,Beauty Products,Elegant fragrance for daily wear,https://fragrances.com.ng/media/catalog/product/cache/4cf9e516177489ae500dec59d26ccb3b/f/r/fragrance_world_explore_edp_100ml_perfume_for_men_2.jpg,,60,ScentSation
+Hair Oil,2000,Beauty Products,Nourishing hair oil for healthy locks,https://m.media-amazon.com/images/I/51Hs2vajwDL._SL1000_.jpg,,110,HairCare
+Shampoo,1500,Beauty Products,Gentle shampoo for all hair types,https://www.johnsonsbaby.com/sites/jbaby_us_3/files/product-images/jns_381371175734_800ml_00000_1000wx1000h.jpeg,,120,CleanLocks
+Conditioner,1800,Beauty Products,Moisturizing conditioner for smooth hair,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAw0LRDpOITLJHb3n9L2XdxF0zin7mZzuiuQ&s,,115,SmoothTress
+Nail Polish,1000,Beauty Products,Long-lasting nail polish in trendy colors,"https://www-konga-com-res.cloudinary.com/w_400,f_auto,fl_lossy,dpr_3.0,q_auto/media/catalog/product/H/C/138750_1705408730.jpg",,150,NailGlam
+Face Mask,2500,Beauty Products,Rejuvenating face mask for skin treatment,https://theskinrepublic.co.za/cdn/shop/files/8809208138186-4_1200x.jpg?v=1696957072,,100,SkinRevive
+Cookware Set,25000,Kitchenware,Complete cookware set for versatile cooking,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgtAoDiJdulTCz470Ao6n2BRQIcJgJ7sCU7A&s,,40,CookMaster
+Knife Set,10000,Kitchenware,Sharp knife set for precise cutting,https://m.media-amazon.com/images/I/71QLlTZdctL._AC_SL1500_.jpg,,60,SharpEdge
+Cutting Board,3000,Kitchenware,Durable cutting board for food preparation,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3E-wdCrfpbl4WgMHmvVBstc75FnmVyUI1tQ&s,,80,ChopPro
+Blender(Silver crest),15000,Kitchenware,Powerful blender for smoothies and more,https://cartnear.s3.us-east-2.amazonaws.com/ng/94bf8a35cb033e4c3f5793a6b7b203ea.jpg,,70,BlendMax
+Rice Cooker,12000,Kitchenware,Efficient rice cooker for perfect rice,https://pyxis.nymag.com/v1/imgs/7e3/0f3/bf2c486c88dd082e9b3b8f966047b6b188-bic-rice-cooker.1x.rsquare.w1400.jpg,,65,RicePerfect
+Toaster,7000,Kitchenware,Quick toaster for crispy bread,"https://www-konga-com-res.cloudinary.com/w_400,f_auto,fl_lossy,dpr_3.0,q_auto/media/catalog/product/D/I/176022_1650027065.jpg",,75,ToastMaster
+Pressure Cooker,20000,Kitchenware,Time-saving pressure cooker for quick meals,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKXbPSbZDqt1d1LILWdysqbw4idFB56NS4CQ&s,,50,QuickCook
+Food Processor,30000,Kitchenware,Versatile food processor for easy prep,https://i5.walmartimages.com/seo/Professional-Food-Processor-FOHERE-12-Cup-Food-Processors-with-4-Speed-Function-4-in-1-600W-Black_cd69d778-a808-4607-9a19-7037490655df.71a6bc77108b7ac4d2197db78b14b1d0.jpeg,,45,PrepMaster
+Juicer,18000,Kitchenware,Efficient juicer for fresh fruit juices,https://ng.jumia.is/unsafe/fit-in/500x500/filters:fill(white)/product/25/2315522/1.jpg?3205,,55,JuiceFresh
+Electric Grill,22000,Kitchenware,Convenient electric grill for indoor grilling,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXgxv8XBjbaKv6gkdxN2ZC_QaNTy_vL8zWaA&s,,40,GrillPro
+Treadmill,200000,Sports Equipment,High-quality treadmill for home workouts,https://i5.walmartimages.com/asr/82d04f6d-1899-4b4e-ab1a-6e290f7e3729.b2c7c6cdcfccbafe66892029d913907c.jpeg,,15,FitRun
+Dumbbell Set,15000,Sports Equipment,Versatile dumbbell set for strength training,https://m.media-amazon.com/images/I/71Sr5UVOCEL._AC_SL1500_.jpg,,30,StrengthPro
+Yoga Mat,5000,Sports Equipment,Comfortable yoga mat for exercise,https://m.media-amazon.com/images/I/71b5fW+s18L.jpg,,50,ZenFlex
+Exercise Bike,100000,Sports Equipment,Stationary bike for cardio workouts,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5YimO1oHV9jMRg3oGIhVhu16RFbPmiNnF6Q&s,,20,CycleFit
+Football,3000,Sports Equipment,Standard football for games and practice,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWg77mGClPq8uLu_JHrF8z5Yr9eU8DxvDY5g&s,,100,KickPro
+Basketball,4000,Sports Equipment,Durable basketball for indoor/outdoor play,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkMdh5o49QiEQQ9Q1jhlgLafvEH6Yjv8BIpQ&s,,90,HoopMaster
+Tennis Racket,20000,Sports Equipment,Professional tennis racket for players,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_vpAK8oJgZq88O2nRhz1uwVuTRuLmlgBdIQ&s,,40,ServeAce
+Resistance Bands,2500,Sports Equipment,Versatile resistance bands for strength training,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-TXuSMrSXIwOC-Ww-y-waickDSIfvyYU9JQ&s,,120,FlexForce
+Kettlebell,10000,Sports Equipment,Heavy-duty kettlebell for functional fitness,"https://assets.roguefitness.com/f_auto,q_auto,c_limit,w_1042,b_rgb:f8f8f8/catalog/Conditioning/Strength%20Equipment/Kettlebells/XX7167/IP0005-WEB_i6rjm8.png",,60,SwingFit
+Punching Bag,30000,Sports Equipment,Durable punching bag for boxing practice,https://ng.jumia.is/unsafe/fit-in/500x500/filters:fill(white)/product/60/2885202/1.jpg?0590,,25,StrikePro
+Children's Book,4000,Books,Informative history book on world events,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHHBq0H7TZ00v9L188qiMZf7KmGOga9xjxjQ&s,,110,PastPages
+Rice (50kg),30000,Groceries,High-quality rice in bulk packaging,https://i0.wp.com/nextcashandcarry.com.ng/wp-content/uploads/2022/05/306372578_5500293866731351_1062903385936141703_n.jpg?fit=680%2C680&ssl=1,,50,GrainHarvest
+Beans (25kg),20000,Groceries,Nutritious beans in bulk packaging,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR58t1zVFvYdzgvlJfBm6bIG7xqYrziFGdg5w&s,,60,BeanBounty
+Vegetable Oil (5L),8000,Groceries,Pure vegetable oil for cooking,https://afro.ng/public/uploads/all/3HoekMtToBrcSh8kD1KOCzAp0iAt7AP7Ol6k4iTV.jpg,,80,CookPure
+Sugar (5kg),5000,Groceries,Refined sugar for baking and sweetening,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTrBqk-1BQwHiXuwsSrYRDRQduSdLw9S94Mw&s,,100,SweetCrystal
+Flour (10kg),6000,Groceries,All-purpose flour for baking,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaHLehxZCQls2C8Brzopj2vreTugApFIKsIg&s,,90,BakeRight
+Cereal (1kg),2500,Groceries,Nutritious breakfast cereal,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqYkmLOkx1zgD3f9r7E1I-tp82HLyTbt2kcQ&s,,120,MorningCrunch
+Pasta (1kg),1500,Groceries,Variety of pasta shapes,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv4jbLuuiq-i1R0i4djYrHGgGv3jYAPodGyg&s,,150,PastaPerfect
+Tomato Paste (12 tins),3000,Groceries,Concentrated tomato paste for cooking,https://image.made-in-china.com/2f0j00FRVbUmCGhLkf/Healthy-Tin-Tomato-Double-Concentrated-Tomato-Paste-28-30-Canned-or-Sachet-to-Mali.jpg,,110,TomatoRich
+Frozen Chicken (1kg),2000,Groceries,Quality frozen chicken for meals,https://organicfoods.com.ng/wp-content/uploads/2019/09/chicken-1.jpg,,70,FarmFresh
+Fish (1kg),2500,Groceries,Fresh fish for seafood dishes,https://www.farmvest.ng/media/products/FB_IMG_16987385077685910.jpg,,65,OceanCatch
+Diapers (Pack),5000,Baby Products,Absorbent diapers for infants,https://pictures-nigeria.jijistatic.net/108975270_NjAwLTYwMC04MDJmNTM1NTUw.webp,,100,BabyComfort
+Baby Wipes,2000,Baby Products,Gentle baby wipes for cleaning,https://ng.jumia.is/unsafe/fit-in/500x500/filters:fill(white)/product/02/5317612/1.jpg?4936,,150,SoftClean
+Baby Formula,6000,Baby Products,Nutritious baby formula for infants,https://www.supermart.ng/cdn/shop/products/spar10280.jpg?v=1688288229,,80,NutriGrow
+Baby Stroller,25000,Baby Products,Comfortable stroller for baby transport,https://i5.walmartimages.com/seo/Babyjoy-2-In-1-Foldable-Baby-Stroller-Kids-Travel-Newborn-Infant-Buggy-Pushchair-Gray_d5d0e7ba-e1df-4ee5-bd37-6c4a934cf317.38a838b43c51749c9fe66efca6bb9f8a.jpeg,,30,StrollEase
+Baby Crib,30000,Baby Products,Safe and sturdy crib for infants,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZJD5iXEvkPYuphwTVLbDWdumoS3QMM1F8Bw&s,,25,DreamNest
+Baby Monitor,20000,Baby Products,Reliable baby monitor for child safety,https://m.media-amazon.com/images/I/61rnMcVq9KL._SL1500_.jpg,,40,SafeWatch
+Baby Clothes,5000,Baby Products,Soft and cute baby clothes set,"https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1672868893-carters-copy-1672868808.jpg?crop=1xw:1xh;center,top&resize=980:*",,60,TinyThreads
+Baby Bath Tub,7000,Baby Products,Safe and comfortable baby bath tub,https://image.made-in-china.com/202f0j00zQukwBUrJpoc/Newborn-Portable-Bathing-Tub-Kids-Bathtub-PP-Plastic-Baby-Bath-Tub.webp,,50,SplashTime
+Baby Carrier,15000,Baby Products,Ergonomic baby carrier for hands-free carrying,https://media.takealot.com/covers_images/e48c99e17c904e86a7f8d9032e128430/s-pdpxl.file,,35,CarryComfort
+Baby Toys,4000,Baby Products,Educational toys for infant development,https://images-cdn.ubuy.co.in/6355f4a361d475307f21542a-toys-for-1-2-3-year-old-boy-girl-funny.jpg,,70,PlayLearn
+Printer,50000,Office Supplies,Efficient printer for home or office use,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWDipskwjfmMQe4k1bnZkZJVbY8-YuOSLo-w&s,,30,PrintPro
+Office Desk,40000,Office Supplies,Spacious office desk for productive work,https://i0.wp.com/kenstarlimited.ng/wp-content/uploads/2022/08/2dcefd84-8a0d-49c9-b4c2-596dc4c2a037.jpg?fit=600%2C532&ssl=1,,25,WorkSpace
+Office Chair,25000,Office Supplies,Ergonomic office chair for comfortable seating,,,35,ErgoSit
+Filing Cabinet,30000,Office Supplies,Organized filing cabinet for document storage,,,20,FileMax
+Shredder,20000,Office Supplies,Secure paper shredder for document disposal,,,40,ShredSafe
+Stationery Set,3000,Office Supplies,Complete stationery set for office needs,,,100,WriteRight
+Whiteboard,10000,Office Supplies,Large whiteboard for presentations,,,50,BoardBright
+Projector,80000,Office Supplies,High-quality projector for presentations,,,15,ProjectClear
+Laptop Stand,8000,Office Supplies,Adjustable laptop stand for ergonomic use,,,60,ErgoDock
+Desk Lamp,5000,Office Supplies,Bright desk lamp for focused lighting,,,70,LightWork
+Car Tyre,25000,Automotive,Durable car tyre for safe driving,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiGnpzrfC_tzrikGbIZ0h8m0akro2jkYAJVw&s,,40,RoadGrip

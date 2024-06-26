@@ -105,60 +105,62 @@ const productController = {
     },
     bulkPublishProduct: async(req, res) => {
         try {
-            //Get the array of product from the request body
             const products = req.body;
-
-            //Create an array to store the IDs of the published products
             const publishedProductsIds = [];
-
-            //Iterate over each product in the array
-            for (const productData of products){
-                //Find the product category document by name
-                const productCategory = await ProductCategory.findOne({name: productData.category.lowerCase()});
-
-            // If the product category exists, replace the category name with its _id
-            if (productCategory) {
-                productData.category = productCategory._id;
-            }
-
-            //Create an inventory document for each products
-            const inventory = new Inventory({
-                productName: productData.productTitle,
-                quantity: productData.inventory
-            })
-
-            //Save the invetory document
-            await inventory.save();
-            
-                //Create the product document
+    
+            for (const productData of products) {
+                let category = null;
+                
+                if (productData.category) {
+                    console.log('Searching for category:', productData.category);
+    
+                    category = await ProductCategory.findOne({name: { $regex: new RegExp('^' + productData.category + '$', 'i') }});
+                    
+                    console.log('Found category:', category);
+    
+                    if (!category) {
+                        console.log('Category not found. Creating new category:', productData.category);
+                        category = new ProductCategory({
+                            name: productData.category,
+                            products: []
+                        });
+                        await category.save();
+                        console.log('New category created:', category);
+                    }
+                }
+    
+                const inventory = new Inventory({
+                    productName: productData.productTitle,
+                    quantity: productData.inventory
+                });
+    
+                await inventory.save();
+                
                 const product = new Product({
                     productTitle: productData.productTitle,
                     price: productData.price,
-                    category: productData.category,
+                    category: category ? category._id : null,
                     description: productData.description,
                     images: productData.images,
-                    //Set the inventory to 0 initially
                     inventory: inventory._id,
                     brand: productData.brand
                 });
-
-                //Save the product to the database
-                const savedProduct =  await product.save();
-
-                //Push the ID of the published product to the array
+    
+                console.log('Product to be saved:', product);
+    
+                const savedProduct = await product.save();
                 publishedProductsIds.push(savedProduct._id);
-
-                //If the product category exists, add the product ID to its products array
-                if (productCategory){
-                    productCategory.products.push(savedProduct._id);
-                    await productCategory.save();
+    
+                if (category) {
+                    category.products.push(savedProduct._id);
+                    await category.save();
                 }
             }
-
-            //Send the array of published product IDs as the response
-            res.json({ publishedProductsIds })
+    
+            res.json({ publishedProductsIds });
         } catch (error) {
-            return res.status(500).json({error: error.message})
+            console.error('Error in bulkPublishProduct:', error);
+            return res.status(500).json({error: error.message});
         }
     },
     viewProductsByCategory: async (req, res) => {
@@ -214,15 +216,45 @@ const productController = {
     searchForProduct: async (req, res) => {
         //These function will be used for searching products
         try {
-            
+            const { query } = req.query; // Get the search query from the request
+
+            if (!query) {
+                return res.status(400).json({ error: 'Search query is required' });
+            }
+    
+            // Create a regex pattern for case-insensitive search
+            const searchPattern = new RegExp(query, 'i');
+    
+            // Search for products matching the query in title, description, or brand
+            const products = await Product.find({
+                $or: [
+                    { productTitle: searchPattern },
+                    { brand: searchPattern }
+                ]
+            }).populate('category'); // Populate the category field if needed
+    
+            if (products.length === 0) {
+                return res.status(404).json({ message: 'No products found matching the search query' });
+            }
+    
+            res.json(products);
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
     fetchNewProducts: async (req, res) => {
         //These are products added to the database within the timeframe of 48hrs, after 48hrs, the product can no longer be tagged a new product
-        try {
-            
+            try {
+                const cutoffDate = new Date(Date.now() - 48 * 60 * 60 * 1000); // Calculate cutoff date (48 hours ago)
+        
+                // Fetch products added within the last 48 hours
+                const newProducts = await Product.find({ createdAt: { $gte: cutoffDate } });
+        
+                if (newProducts.length === 0) {
+                    return res.status(404).json({ error: 'No new products found' });
+                }
+        
+                res.json(newProducts);
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
