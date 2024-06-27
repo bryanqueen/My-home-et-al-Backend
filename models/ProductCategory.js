@@ -10,6 +10,10 @@ const productCategorySchema = new Schema({
     products: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
-    }]
+    }],
+    product_category_image: {
+        type: String,
+        
+    }
 });
 module.exports = ProductCategory = model('ProductCategory', productCategorySchema)

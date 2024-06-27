@@ -63,6 +63,7 @@ const productCategoryController = {
                     $group: {
                         _id: "$_id",
                         name: { $first: "$name" },
+                        product_category_image: { $first: "$product_category_image"},
                         productCount: { $sum: 1 }
                     }
                 },
@@ -91,15 +92,16 @@ const productCategoryController = {
                 return res.status(400).json({error: 'A product category with this name already exists.'})
             }
 
-            //Upload Category Image to Cloudinary
-            const uploadPromise = req.files.map(file => {
-                return cloudinary.uploader.upload(file.path, {
+            let imageUrl = null;
+
+            //Check if a file was uploaded
+            if(req.file) {
+                //Upload the single image to Cloudinary
+                const result = await cloudinary.uploader.upload(req.file.path, {
                     folder: 'product_category_images'
                 });
-            });
-
-            const imageResult = await promises.all(uploadPromise);
-            const imageUrl = imageResult.map(result => result.secure_url)
+                imageUrl = result.secure_url;
+            }
 
             const updatedProductCategory = await ProductCategory.findByIdAndUpdate(
                 productCategoryId,
