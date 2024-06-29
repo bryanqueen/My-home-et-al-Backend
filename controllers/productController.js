@@ -47,7 +47,8 @@ const productController = {
                 description, 
                 images: imageUrls, 
                 inventory: newInventory._id, 
-                brand 
+                brand,
+                isProductNew: true 
             });
 
             await product.save();
@@ -61,9 +62,12 @@ const productController = {
                 await productCategory.save();
             }
 
-            res.json({ message: 'Product Created Successfully' });
+             // Set a timer to update isProductNew field after 48 hours
+                setTimeout(async () => {
+                    await Product.findByIdAndUpdate(product._id, { isProductNew: false });
+                }, 1 * 10 * 60 * 1000); // 48 hours in milliseconds
+                    res.json({ message: 'Product Created Successfully' });
 
-           
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
@@ -143,7 +147,8 @@ const productController = {
                     description: productData.description,
                     images: productData.images,
                     inventory: inventory._id,
-                    brand: productData.brand
+                    brand: productData.brand,
+                    isProductNew: true
                 });
     
                 console.log('Product to be saved:', product);
@@ -156,7 +161,12 @@ const productController = {
                     await category.save();
                 }
             }
-    
+                 // Set a timer to update isProductNew field after 48 hours
+                    setTimeout(async () => {
+                        await Product.findByIdAndUpdate(savedProduct._id, { isProductNew: false });
+                    }, 1 * 10 * 60 * 1000); // 48 hours in milliseconds
+
+
             res.json({ publishedProductsIds });
         } catch (error) {
             console.error('Error in bulkPublishProduct:', error);
@@ -165,26 +175,36 @@ const productController = {
     },
     viewProductsByCategory: async (req, res) => {
         try {
-            //get the category id
+            // Get the category id
             const categoryId = req.params.id;
-
-            //Retrieve ProductCategory by ID
+            console.log('Category ID:', categoryId);
+    
+            // Retrieve ProductCategory by ID
             const productCategory = await ProductCategory.findById(categoryId);
-
-            //Check if the ProductCategory exists
-            if(!productCategory){
-                return res.status(404).json({error: 'Product Category not found'})
+    
+            // Check if the ProductCategory exists
+            if (!productCategory) {
+                return res.status(404).json({error: 'Product Category not found'});
             }
-
-            //Access the product IDs from the product category product field.
-            const productIds = productCategory.products
-
-            //Fetch the Products using the productIds
-            const products = await Product.find({_id: {$in: productIds}});
-
-            res.json(products)
+    
+            console.log('Product Category:', productCategory.name);
+            console.log('Number of products in category:', productCategory.products.length);
+    
+            // Fetch all products in the category
+            const products = await Product.find({_id: {$in: productCategory.products}});
+    
+            console.log('Number of products fetched:', products.length);
+    
+            // Reverse the order of products
+            const reversedProducts = products.reverse();
+    
+            console.log('First product after reversal:', reversedProducts[0]?.productTitle);
+            console.log('Last product after reversal:', reversedProducts[reversedProducts.length - 1]?.productTitle);
+    
+            res.json(reversedProducts);
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            console.error('Error in viewProductsByCategory:', error);
+            return res.status(500).json({error: 'Oops! An error occurred, please refresh'});
         }
     },
     fetchAllProducts: async (req, res) => {

@@ -28,7 +28,7 @@ const productSchema = new Schema({
         type: String,
         required: true
     }],
-    isNew: {
+    isProductNew: {
         type: Boolean
     },
     inventory: {
@@ -38,6 +38,10 @@ const productSchema = new Schema({
     },
     brand: {
         type: String
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
     }
 
 });
