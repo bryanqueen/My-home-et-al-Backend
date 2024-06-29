@@ -150,7 +150,7 @@ const adminController = {
     },
     getSingleAdminDetails: async(req, res) => {
         try {
-            const adminId = req.admin._id;
+            const adminId = req.params.id;
 
             const adminProfile = await Admin.findById(adminId);
 
