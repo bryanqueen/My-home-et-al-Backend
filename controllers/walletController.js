@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs')
 const walletController = {
     createWallet: async (req, res) => {
         try {
-            const user = req.user._id
+            const user = req.user._id;
             const createWalletRoute = process.env.CREATE_WALLET_API
             
             //Wallet Details collection
@@ -16,7 +16,10 @@ const walletController = {
                 display_name,
                 bvn,
                 email,
+                firstname,
+                lastname,
                 gender,
+                currency,
                 date_of_birth,
                 mobile_number,
             } = req.body;
@@ -46,11 +49,16 @@ const walletController = {
             };
 
 
-            const response = await axios.post(createWalletRoute, payload, config);
-
-        
-            const {account_no, bank_name} = response.data.data;
-            const {balance} = response.data.data.balance;
+            let response;
+            try {
+                response = await axios.post(createWalletRoute, payload, config);
+            } catch (apiError) {
+                console.error('Error creating wallet with Pooler API:', apiError.response?.data || apiError.message);
+                return res.status(500).json({ error: apiError.response?.data.data });
+            }
+    
+            const { account_no, bank_name } = response.data.data;
+            const { balance } = response.data.data.balance;
 
             const wallet = new Wallet({
                 user,
@@ -64,7 +72,7 @@ const walletController = {
                 mobile_number,
                 account_no,
                 bank_name,
-                balance
+                balance: balance || 0
             });
 
             const newWalletData = await wallet.save()

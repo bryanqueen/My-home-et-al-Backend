@@ -1,6 +1,8 @@
 const Payment = require('../models/Payment');
 const Wallet = require('../models/Wallet');
 const Transaction = require('../models/Transaction');
+const AdminWallet = require('../models/AdminWallet');
+const Order = require('../models/Order');
 const axios = require('axios');
 
 const paymentController = {
@@ -14,7 +16,12 @@ const paymentController = {
                 from_account_number,
             } = req.body;
 
-            const adminWallet = 5579626765;
+            const fetchAdminWallet = await AdminWallet.find();
+            if(!fetchAdminWallet){
+                return res.status(404).json({error: 'No admin account was found'})
+            }
+            const adminAccountNumber = fetchAdminWallet[0].account_no;
+
             const createWalletRoute = process.env.CREATE_WALLET_API;
             const walletIntraTransferRoute = `${createWalletRoute}payments/intra`
             
@@ -39,7 +46,7 @@ const paymentController = {
                 reference: orderId,
                 amount,
                 from_account_number,
-                to_account_number: adminWallet,
+                to_account_number: adminAccountNumber,
                 to_settlement: false
             };
 
@@ -62,7 +69,6 @@ const paymentController = {
 
             //Record Payment in the database
             const payment = new Payment({
-                paymentId,
                 userId,
                 orderId,
                 amount,
@@ -83,6 +89,13 @@ const paymentController = {
         // Add the transaction to the wallet's transactions array
         wallet.transactions.push(transaction._id);
         await wallet.save();
+
+            // Update the order status to Pending
+            const order = await Order.findById(orderId);
+            if (order) {
+                order.status = 'Pending';
+                await order.save();
+            }
 
         res.json({ message: 'Payment successful', payment });
 

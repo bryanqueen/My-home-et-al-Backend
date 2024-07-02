@@ -11,7 +11,14 @@ const orderController = {
                     deliveryMethod,
                     paymentMethod
                   } = req.body;
+        if(!user){
+            return res.status(400).json({error: ''})
+        }
+
+        const orderId = Math.floor(Math.random() * 10**13).toString().padStart(13, '0');
+
             const newOrder = new Order({
+                orderId,
                 user,
                 address,
                 orderPrice,

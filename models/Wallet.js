@@ -12,16 +12,12 @@ const walletSchema = new Schema({
         required: true
     },
     bvn: {
-        type: Number,
+        type: String,
         required: true
     },
     mobile_number: {
         type: String,
         
-    },
-    account_no: {
-        type: String,
-        required: true
     },
     bank_name: {
         type: String,

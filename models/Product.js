@@ -39,6 +39,7 @@ const productSchema = new Schema({
     brand: {
         type: String
     },
+    
     createdAt: {
         type: Date,
         default: Date.now()

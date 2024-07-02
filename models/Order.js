@@ -5,7 +5,8 @@ const OrderItem = require('../models/OrderItem')
 const orderSchema = new Schema({
     orderId: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -19,7 +20,8 @@ const orderSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['Pending', 'Ongoing', 'Delivered']
+        enum: ['Not Paid','Pending', 'Ongoing', 'Delivered'],
+        default: 'Not paid'
     },
     address: {
         type: String,

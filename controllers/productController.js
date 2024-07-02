@@ -301,7 +301,7 @@ const productController = {
             }
             res.json({message: 'Product updated successfully'})
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
     },
     deleteProduct: async (req, res) => {
