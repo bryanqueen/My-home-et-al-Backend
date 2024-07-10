@@ -3,6 +3,16 @@ const {Schema, model} = mongoose;
 
 
 const userSchema = new Schema({
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    facebookId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
     firstname: {
         type: String,
         reqquired: true
@@ -17,6 +27,11 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
+        required: false
+    },
+    authMethod: {
+        type: String,
+        enum: ['local', 'google', 'facebook'],
         required: true
     },
     wallet: {

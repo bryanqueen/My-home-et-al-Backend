@@ -6,37 +6,41 @@ const Inventory = require('../models/Inventory');
 const productCategoryController = {
     createProductCategory: async (req, res) => {
         try {
-            const {name} = req.body;
-
-            //Check if a category already exist with the same name
+            const { name } = req.body;
+    
+            // Check if a category already exists with the same name
             const existingProductCategory = await ProductCategory.findOne({ name });
-
-            if(existingProductCategory){
-                return res.status(400).json({error: 'A product category with this name already exixts'})
+            if (existingProductCategory) {
+                return res.status(400).json({ error: 'A product category with this name already exists' });
             }
-
-  
+    
             let imageUrl = null;
-
+    
             // Check if a file was uploaded
             if (req.file) {
-                // Upload the single image to Cloudinary
-                const result = await cloudinary.uploader.upload(req.file.path, {
-                    folder: 'product_category_images'
-                });
-                imageUrl = result.secure_url;
+                try {
+                    // Upload the single image to Cloudinary
+                    const result = await cloudinary.uploader.upload(req.file.path, {
+                        folder: 'product_category_images'
+                    });
+                    imageUrl = result.secure_url;
+                } catch (uploadError) {
+                    console.error('Error uploading image to Cloudinary:', uploadError);
+                    return res.status(500).json({ error: 'Error uploading image to Cloudinary' });
+                }
             }
-            
-            //If the category doesn't already exist, create a new one
+    
+            // If the category doesn't already exist, create a new one
             const newProductCategory = new ProductCategory({ 
                 name,
                 product_category_image: imageUrl
-             });
+            });
             await newProductCategory.save();
-
-            res.json({message: 'Product category successfully created'})
+    
+            res.json({ message: 'Product category successfully created' });
         } catch (error) {
-            return res.status(500).json({error: error.message})
+            console.error('Error creating category:', error);
+            return res.status(500).json({ error: 'Internal server error' });
         }
     },
 

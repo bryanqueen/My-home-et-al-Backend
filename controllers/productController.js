@@ -18,7 +18,12 @@ const productController = {
                 category, 
                 description, 
                 inventory, 
-                brand 
+                brand,
+                weight,
+                modelNumber,
+                mainMaterial,
+                color,
+                keyFeatures 
             } = req.body;
 
             // Create a new inventory document
@@ -40,6 +45,9 @@ const productController = {
             const imageResults = await Promise.all(uploadPromises);
             const imageUrls = imageResults.map(result => result.secure_url);
 
+            // Handle keyFeatures array
+             const keyFeaturesArray = Array.isArray(keyFeatures) ? keyFeatures : [keyFeatures];
+
             const product = new Product({ 
                 productTitle, 
                 price, 
@@ -48,7 +56,12 @@ const productController = {
                 images: imageUrls, 
                 inventory: newInventory._id, 
                 brand,
-                isProductNew: true 
+                isProductNew: true,
+                weight,
+                modelNumber,
+                mainMaterial,
+                color,
+                keyFeatures: keyFeaturesArray
             });
 
             await product.save();
@@ -91,9 +104,22 @@ const productController = {
                     price: data.price,
                     category: data.category,
                     description: data.description,
-                    images: [data.image1, data.image2, data.image3].filter(Boolean),
+                    images: [data.image1, data.image2, data.image3, data.image4].filter(Boolean),
                     inventory: data.inventory,
-                    brand: data.brand
+                    brand: data.brand,
+                    weight: data.weight,
+                    modelNumber: data.modelNumber,
+                    mainMaterial: data.mainMaterial,
+                    color: data.color,
+                    keyFeatures: [
+                        data.feature1,
+                        data.feature2,
+                        data.feature3,
+                        data.feature4,
+                        data.feature5,
+                        data.feature6,
+                        data.feature7
+                    ].filter(Boolean)
                 };
                 products.push(product)
                })
@@ -148,7 +174,12 @@ const productController = {
                     images: productData.images,
                     inventory: inventory._id,
                     brand: productData.brand,
-                    isProductNew: true
+                    isProductNew: true,
+                    weight: productData.weight,
+                    modelNumber: productData.modelNumber,
+                    mainMaterial: productData.mainMaterial,
+                    color: productData.color,
+                    keyFeatures: productData.keyFeatures
                 });
     
                 console.log('Product to be saved:', product);
@@ -279,6 +310,7 @@ const productController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
+    
    
     editProduct: async (req, res) => {
         try {
@@ -292,7 +324,12 @@ const productController = {
                     category,
                     description,
                     images,
-                    inventory
+                    inventory,
+                    brand,
+                    modelNumber,
+                    mainMaterial,
+                    color,
+                    keyFeatures    
                 },
                 {new: true}
             );

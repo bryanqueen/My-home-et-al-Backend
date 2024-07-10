@@ -39,8 +39,27 @@ const productSchema = new Schema({
     brand: {
         type: String
     },
-    
+    weight: {
+        type: String
+    },
+    modelNumber: {
+        type: String
+    },
+
+    mainMaterial: {
+        type: String
+    },
+    color: {
+        type: String
+    },
+    keyFeatures: [{
+        type: String
+    }],
     createdAt: {
+        type: Date,
+        default: Date.now()
+    },
+    updatedAt: {
         type: Date,
         default: Date.now()
     }

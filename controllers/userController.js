@@ -1,9 +1,12 @@
 const User = require('../models/User');
 const ProductCategory = require('../models/ProductCategory');
+const Product = require('../models/Product')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const sendVerificationEmail = require('../utils/sendVerificationEmail');
+
+
 
 
 const userController = {
@@ -206,20 +209,74 @@ const userController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
-    SignUpWithSocials: async (req, res) => {
-        //SignUp is done mainly with either of this two socials: Google or Facebook
+    addSavedItem: async (req, res) => {
         try {
-            
+            const userId = req.user._id;
+            const productId = req.params.id;
+
+            // Find the user by ID
+            const user = await User.findById(userId);
+
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            //Check if product exists
+            const product = await Product.findById(productId);
+            if(!product){
+                return res.status(404).json({error: 'Product Not found'})
+            }
+
+            // Initialize savedItems if it's undefined
+            if (!user.savedItems) {
+                user.savedItems = [];
+            }
+
+                //Add Saved items if not already added
+            if(!user.savedItems.includes(productId)){
+                user.savedItems.push(productId)
+                await user.save()
+            }
+
+            res.status(200).json({message: 'Product added to savedItems', savedItems: user.savedItems})
         } catch (error) {
-            
+            return res.status(500).json({error: error.message})
         }
     },
-    SignInWithSocials: async (req, res) => {
-        //SignIn is done mainly with either of this two socials: Google or Facebook
+    removeSavedItem: async (req, res) => {
         try {
-            
+            const userId = req.user._id;
+            const {productId} = req.body
+
+            //Find user
+            const user = await User.findById(userId);
+            if(!user){
+                return res.status(404).json({error: 'User not found'})
+            }
+
+            //Remove product from saved items
+            user.savedItems = user.savedItems.filter(item => item.toString() !== productId);
+
+            await user.save();
+
+            res.status(200).json({message: 'Product removed from savedItems', savedItems: user.savedItems})
         } catch (error) {
-            
+            return res.status(500).json({error: 'Ooops!! an error occured, please retry'})
+        }
+    },
+    getSavedItems: async (req, res) => {
+        try {
+            const userId = req.user._id;
+
+            //Find user by id and populate savedItems
+            const user = await user.findById(userId).populate('savedItems');
+            if(!user){
+                return res.status(404).json({error: 'User not found, therefore savedItems can\'t not be retrieved'})
+            }
+
+            res.status(200).json({savedItems: user.savedItems})
+        } catch (error) {
+            return res.status(500).json({error: 'Ooops!! an error occured, please retry'})
         }
     },
     viewAccountProfile: async (req, res) => {

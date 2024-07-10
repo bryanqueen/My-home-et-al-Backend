@@ -6,6 +6,7 @@ const authenticateAdmin = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
     if(!authHeader){
+        console.log('Authorization header is missing')
         return res.status(401).json({error: 'Authorization header missing'});
     }
 
@@ -15,13 +16,21 @@ const authenticateAdmin = async (req, res, next) => {
     try {
         //Verify the token
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('decoded token:', decodedToken)
 
         //Find the admin by ID stored in the token
         const admin = await Admin.findById(decodedToken.id);
+        
 
         if(!admin){
+            console.log('Not Authorized')
             return res.status(401).json({error: 'Admin not found'})
         }
+
+        // if(admin.role !== 'Super Admin' || 'Employee Admin'){
+        //     console.log('User is not an admin')
+        //     return res.status(403).json({error: 'Not Authorized.'})
+        // }
 
         //Attach the admin to the request object
         req.admin = admin;

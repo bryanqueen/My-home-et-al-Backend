@@ -3,7 +3,6 @@ const {Router} = express;
 const router = Router();
 const productController = require('../controllers/productController');
 const authenticateAdmin = require('../middlewares/authenticateAdmin');
-const authenticateUser = require('../middlewares/authenticateUsers')
 const upload = require('../config/multer');
 
 
