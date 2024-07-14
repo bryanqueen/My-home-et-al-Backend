@@ -1,7 +1,8 @@
 const Admin = require('../models/Admin');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User')
+const User = require('../models/User');
+const cloudinary = require('../config/cloudinary')
 
 
 const adminController = {
@@ -81,7 +82,6 @@ const adminController = {
         try {
             const {
                 fullname,
-                image,
                 email,
                 address,
                 phone_no,
@@ -97,19 +97,43 @@ const adminController = {
                 employment_type,
                 salary,
             } = req.body;
-            //Ensuring that only Super Admin can create admin account
+            // console.log('Request body:', req.body)
+            console.log('Fullname:', fullname)
+    
+            // Ensure that only Super Admin can create admin accounts
             if (req.admin.role !== 'Super Admin') {
-                return res.status(403).json({error: 'Only Super Admin can create Employee Admin accounts.'})
+                return res.status(403).json({error: 'Only Super Admin can create Employee Admin accounts.'});
             }
-
-            const saltHash = 10;
-
-            //Generate hash for the password
-            const hashedPassword = await bcrypt.hash(password, saltHash);
-
+    
+            // Validate required fields
+            if (!password) {
+                return res.status(400).json({error: 'Password is required'});
+            }
+    
+            let imageUrl = null;
+    
+            // Check if a file was uploaded
+            if (req.file) {
+                try {
+                    // Upload employee photo to Cloudinary
+                    const result = await cloudinary.uploader.upload(req.file.path, {
+                        folder: 'employee_photos'
+                    });
+                    imageUrl = result.secure_url;
+                } catch (uploadError) {
+                    console.error('Error uploading image to Cloudinary:', uploadError);
+                    return res.status(500).json({error: 'Error uploading to Cloudinary'});
+                }
+            }
+    
+            const saltRounds = 10;
+    
+            // Generate hash for the password
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+    
             const employeeAdmin = new Admin({
                 fullname,
-                image,
+                image: imageUrl,
                 email,
                 role: 'Employee Admin',
                 password: hashedPassword,
@@ -126,12 +150,13 @@ const adminController = {
                 employment_type,
                 salary,
             });
-
+    
             await employeeAdmin.save();
-
-            res.status(201).json({message: 'Employee Admin account created successfully.'})
+    
+            res.status(201).json({message: 'Employee Admin account created successfully.'});
         } catch (error) {
-            return res.status(500).json({error: error.message})
+            console.error('Error creating Employee admin:', error);
+            return res.status(500).json({error: error.message});
         }
     },
     getAllEmployeeAdmins: async (req, res) => {

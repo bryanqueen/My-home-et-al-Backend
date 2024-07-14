@@ -2,7 +2,6 @@ const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken')
 const port = process.env.PORT || 4000
 const walletRoutes = require('./routes/walletRoutes');
 const adminWalletRoutes = require('./routes/adminWalletRoutes');
@@ -19,7 +18,6 @@ const path = '/api/v1'
 
 //Initialize App
 const app = express();
-
 
 //Middlewares
 app.use(express.json());
