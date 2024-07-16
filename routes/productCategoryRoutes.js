@@ -11,6 +11,7 @@ router.get('/top-categories', productCategoryController.getTopProductCategories)
 //Private Routes
 router.post('/', authenticateAdmin, upload.single('category-image'), productCategoryController.createProductCategory);
 router.put('/edit-category/:id', authenticateAdmin, upload.single('category-image'), productCategoryController.editProductCategory);
+router.delete('/delete-category/:id', authenticateAdmin, productCategoryController.deleteProductCategory);
 
 
 module.exports = router;
