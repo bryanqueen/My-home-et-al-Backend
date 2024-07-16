@@ -57,6 +57,11 @@ const adminSchema = new Schema({
     },
     position: {
         type: String
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
+        required: true
     }
 });
 module.exports = Admin = model('Admin', adminSchema)

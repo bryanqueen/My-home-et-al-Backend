@@ -13,7 +13,6 @@ const productCategorySchema = new Schema({
     }],
     product_category_image: {
         type: String,
-        
     }
 });
 module.exports = ProductCategory = model('ProductCategory', productCategorySchema)

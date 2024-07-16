@@ -149,6 +149,7 @@ const adminController = {
                 start_date,
                 employment_type,
                 salary,
+                isActive: true
             });
     
             await employeeAdmin.save();
@@ -191,7 +192,7 @@ const adminController = {
         try {
             //Ensuring that only Super Admin can delete Employee Admin account
             if (req.admin.role !== 'Super Admin') {
-                return res.status(403).json({error: 'Only Super Admin can delete Employee Admin account'})
+                return res.status(403).json({error: 'Only Super Admin can perform this action'})
             }
 
             const EmployeeAdminId = req.params.id;
@@ -201,6 +202,42 @@ const adminController = {
             res.json({message: 'Employee Admin account deleted Successfully'})
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please try again'})
+        }
+    },
+    deactivateEmployeeAdmin: async(req, res) => {
+        try {
+            //Ensuring that only Super Admin can deactivate Employee admin account
+            if(req.admin.role !== 'Super Admin') {
+                return res.status(403).json({error: 'Only Super Admin can perform this action'})
+            }
+
+            const employeeAdminId = req.params.id;
+
+            const employeeAdmin = await Admin.findById(employeeAdminId);
+
+            employeeAdmin.isActive = false;
+
+            await employeeAdmin.save();
+            res.json({message: 'Employee Admin deactivated Successfully', employeeAdmin})
+        } catch (error) {
+            return res.status(500).json({error: error.message})
+        }
+    },
+    activateEmployeeAdmin: async (req, res) => {
+        try {
+            //Ensure that only Super Admin can perform this action
+            if(req.admin.role !== 'Super Admin'){
+                return res.status(403).json({error: 'Only Super Admin can perform this action'})
+            }
+            const employeeAdminId = req.params.id;
+
+            const employeeAdmin = await Admin.findById(employeeAdminId);
+
+            employeeAdmin.isActive = true;
+            await employeeAdmin.save();
+            res.json({message: 'Employee Admin activated successfully', employeeAdmin})
+        } catch (error) {
+            return res.status(500).json({error: error.message})
         }
     },
     fetchAllUsers: async (req, res) => {
