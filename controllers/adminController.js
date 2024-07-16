@@ -190,7 +190,7 @@ const adminController = {
     deleteEmployeeAdmin: async (req, res) => {
         try {
             //Ensuring that only Super Admin can delete Employee Admin account
-            if (!req.admin.role !== 'Super Admin') {
+            if (req.admin.role !== 'Super Admin') {
                 return res.status(403).json({error: 'Only Super Admin can delete Employee Admin account'})
             }
 
