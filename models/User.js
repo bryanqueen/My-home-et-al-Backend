@@ -3,19 +3,19 @@ const {Schema, model} = mongoose;
 
 
 const userSchema = new Schema({
-    googleId: {
-        type: String,
-        unique: true,
-        sparse: true
-    },
-    facebookId: {
-        type: String,
-        unique: true,
-        sparse: true
-    },
+    // googleId: {
+    //     type: String,
+    //     unique: true,
+    //     sparse: true
+    // },
+    // facebookId: {
+    //     type: String,
+    //     unique: true,
+    //     sparse: true
+    // },
     firstname: {
         type: String,
-        reqquired: true
+        required: true
     },
     lastname: {
         type: String,
@@ -28,11 +28,6 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: false
-    },
-    authMethod: {
-        type: String,
-        enum: ['local', 'google', 'facebook'],
-        required: true
     },
     wallet: {
         type: mongoose.Schema.Types.ObjectId,
@@ -63,6 +58,18 @@ const userSchema = new Schema({
     },
     isVerified: {
         type: Boolean,
+    },
+    points: {
+        type: Number,
+        default: 100
+    },
+    referralCode: {
+        type: String,
+        unique: true
+    },
+    referredBy: {
+        type: String,
+        default: null
     }
 
 });

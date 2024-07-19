@@ -13,7 +13,7 @@ const userController = {
     signUp: async (req, res) => {
         //SignUp is done with email and password
         try {
-            const {email, password, firstname, lastname} = req.body;
+            const {email, password, firstname, lastname, referralCode} = req.body;
 
             //Check if user already exists in the database with the email
             const existingUser = await User.findOne({email});
@@ -28,6 +28,7 @@ const userController = {
 
             const saltHash = 12;
             const hashedPassword = await bcrypt.hash(password, saltHash);
+            const newReferralCode = crypto.randomBytes(3).toString('hex').toUpperCase();
 
             const user = new User({
                 email,
@@ -35,7 +36,10 @@ const userController = {
                 lastname,
                 password: hashedPassword,
                 otp,
-                otpExpiry
+                otpExpiry,
+                referralCode: newReferralCode,
+                points: 100,
+                referredBy: referralCode ? referralCode : null
             });
             
             //send Email OTP
@@ -45,7 +49,7 @@ const userController = {
             await user.save(); 
 
 
-            res.json({message: `We sent an OTP to ${email}, please verify `})
+            res.json({message: `We sent an OTP to ${email}, please verify `, referralCode: newReferralCode})
             
         } catch (error) {
             return res.status(500).json({error: error.message})
