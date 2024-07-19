@@ -22,15 +22,14 @@ const orderController = {
                 user,
                 address,
                 orderPrice,
-                totalPrice,
                 orderItems,
                 deliveryMethod,
                 paymentMethod
             });
             await newOrder.save();
-            res.json({message: 'Order Created Successfully'})
+            res.json({message: 'Order Created Successfully', newOrder})
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
     },
     trackOrder: async (req, res) => {

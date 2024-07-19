@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const {model, Schema} = mongoose;
-const OrderItem = require('../models/OrderItem')
 
 const orderSchema = new Schema({
     orderId: {
@@ -20,7 +19,7 @@ const orderSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['Not Paid','Pending', 'Ongoing', 'Delivered'],
+        enum: ['Not paid','Pending', 'Ongoing', 'Delivered'],
         default: 'Not paid'
     },
     address: {
@@ -28,12 +27,24 @@ const orderSchema = new Schema({
         required: true
     },
     orderPrice: {
-        type: String,
+        type: Number,
         required: true
     },
-    orderItems: {
-        type: [OrderItem]
-    },
+    orderItems:[{
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true
+      },
+      qty: {
+        type: Number,
+        required: true
+      },
+      price: {
+        type: Number,
+        required: true
+      }
+    }],
     deliveryMethod: {
         type: String,
         enum: ['Door delivery', 'Pickup delivery'],

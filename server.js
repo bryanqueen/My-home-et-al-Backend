@@ -11,6 +11,7 @@ const productRoutes = require('./routes/productRoutes');
 const productCategoryRoutes = require('./routes/productCategoryRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 
 const path = '/api/v1'
@@ -47,7 +48,8 @@ app.use(`${path}/user`, userRoutes);
 app.use(`${path}/product`, productRoutes);
 app.use(`${path}/product-category`, productCategoryRoutes);
 app.use(`${path}/review`, reviewRoutes);
-app.use(`${path}/admin-wallet`, adminWalletRoutes)
+app.use(`${path}/admin-wallet`, adminWalletRoutes);
+app.use(`${path}/order`, orderRoutes);
 
 //Webhook Route middleware
 app.use(`${path}/webhook`, webhookRoutes);
