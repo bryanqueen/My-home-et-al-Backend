@@ -25,7 +25,7 @@ const sendVerificationEmail = async (email, otp) => {
 
     //Send mail
     await transporter.sendMail({
-        from: '',
+        from: 'Test test@myhomeetal.com',
         to: email,
         subject: 'OTP to verify your email address',
         html
