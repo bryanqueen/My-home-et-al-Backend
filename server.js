@@ -12,6 +12,7 @@ const productCategoryRoutes = require('./routes/productCategoryRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 
 const path = '/api/v1'
@@ -50,9 +51,10 @@ app.use(`${path}/product-category`, productCategoryRoutes);
 app.use(`${path}/review`, reviewRoutes);
 app.use(`${path}/admin-wallet`, adminWalletRoutes);
 app.use(`${path}/order`, orderRoutes);
+app.use(`${path}/payment`, paymentRoutes)
 
 //Webhook Route middleware
-app.use(`${path}/webhook`, webhookRoutes);
+// app.use(`${path}/webhook`, webhookRoutes);
 
 //Database Connection must be established before listening to port
 connectDB()

@@ -18,13 +18,18 @@ function verifySignature(req) {
 
 const webhookController = {
     handleWebhook: async (req, res) => {
+        console.log('Webhook received:', req.body);
         try {
             // Verify the webhook signature
             if (!verifySignature(req)) {
+                console.log('Invalid signature');
                 return res.status(400).json({ error: 'Invalid signature' });
             }
 
             const { event, data } = req.body;
+            
+            console.log('Event:', event); // Log the event type
+            console.log('Data:', data); // Log the event data
 
             if (event === 'event.intra.transfer' && data.completed) {
                 await handleIntraTransfer(data);

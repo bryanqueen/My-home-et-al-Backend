@@ -4,6 +4,7 @@ const Transaction = require('../models/Transaction');
 const AdminWallet = require('../models/AdminWallet');
 const Order = require('../models/Order');
 const axios = require('axios');
+const { createPayment } = require('../config/rexPay')
 
 const paymentController = {
     makeWalletPayment: async (req, res) => {
@@ -32,7 +33,6 @@ const paymentController = {
             if(!wallet){
                 return res.status(404).json({error: 'Wallet not found'});
             }
-
             //Check if wallet has sufficient balance
             if(wallet.balance < amount){
                 return res.status(400).json({error: 'Insufficient wallet balance'})
@@ -100,8 +100,27 @@ const paymentController = {
         res.json({ message: 'Payment successful', payment });
 
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
+    },
+
+    initiateRexpayPayment: async(req, res) => {
+        try {
+            const paymentDetails = {
+              reference: req.body.reference,
+              amount: req.body.amount,
+              currency: req.body.currency,
+              userId: req.body.userId,
+              callbackUrl: req.body.callbackUrl,
+              metadata: req.body.metadata
+            };
+        
+            const result = await createPayment(paymentDetails);
+            res.status(200).json(result);
+          } catch (error) {
+            console.error('Payment initiation failed:', error);
+            res.status(500).json({ error: 'Failed to initiate payment' });
+          }
     }
 };
 module.exports = paymentController;
