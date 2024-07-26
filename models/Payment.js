@@ -3,8 +3,7 @@ const {model, Schema} = mongoose;
 
 const paymentSchema = new Schema({
     paymentId: {
-        type: String,
-        required: true
+        type: String
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,7 +25,7 @@ const paymentSchema = new Schema({
     method: {
         type: String,
         required: true,
-        enum: ['Wallet', 'Card']
+        enum: ['Wallet', 'Online']
     },
     date: {
         type: Date,

@@ -4,7 +4,8 @@ const Transaction = require('../models/Transaction');
 const AdminWallet = require('../models/AdminWallet');
 const Order = require('../models/Order');
 const axios = require('axios');
-const { createPayment } = require('../config/rexPay')
+const { createPayment } = require('../config/rexPay');
+const userController = require('./userController')
 
 const paymentController = {
     makeWalletPayment: async (req, res) => {
@@ -21,6 +22,7 @@ const paymentController = {
             if(!fetchAdminWallet){
                 return res.status(404).json({error: 'No admin account was found'})
             }
+            console.log(fetchAdminWallet[0].account_no)
             const adminAccountNumber = fetchAdminWallet[0].account_no;
 
             const createWalletRoute = process.env.CREATE_WALLET_API;
@@ -33,10 +35,10 @@ const paymentController = {
             if(!wallet){
                 return res.status(404).json({error: 'Wallet not found'});
             }
-            //Check if wallet has sufficient balance
-            if(wallet.balance < amount){
-                return res.status(400).json({error: 'Insufficient wallet balance'})
-            };
+            // Check if wallet has sufficient balance
+            // if(wallet.balance < amount){
+            //     return res.status(400).json({error: 'Insufficient wallet balance'})
+            // };
 
             //Pooler Intra Transfer API Call
 
@@ -64,8 +66,8 @@ const paymentController = {
             }
 
             //Deduct amount from wallet balance
-            wallet.balance -= amount;
-            await wallet.save();
+            // wallet.balance -= amount;
+            // await wallet.save();
 
             //Record Payment in the database
             const payment = new Payment({
@@ -91,15 +93,16 @@ const paymentController = {
         await wallet.save();
 
             // Update the order status to Pending
-            const order = await Order.findById(orderId);
+            const order = await Order.findOne({orderId: orderId});
             if (order) {
                 order.status = 'Pending';
                 await order.save();
             }
-
+            await userController.handlePurchaseAndReferralReward(userId)
         res.json({ message: 'Payment successful', payment });
 
         } catch (error) {
+            console.log(error)
             return res.status(500).json({error: error.message})
         }
     },

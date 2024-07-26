@@ -358,5 +358,37 @@ const userController = {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
     },
+    handlePurchaseAndReferralReward: async (userId) => {
+        try {
+            const user = await User.findById(userId);
+            
+            if (!user) {
+                throw new Error('User not found');
+            }
+    
+            if (!user.hasMadePurchase) {
+                // This is the user's first purchase
+                user.hasMadePurchase = true;
+    
+                // Check if the user was referred by someone
+                if (user.referredBy) {
+                    const referrer = await User.findOne({ referralCode: user.referredBy });
+                    
+                    if (referrer) {
+                        // Add 400 points to the referrer
+                        referrer.points += 400;
+                        await referrer.save();
+                    }
+                }
+    
+                await user.save();
+            }
+    
+            return user;
+        } catch (error) {
+            console.error('Error handling purchase and referral reward:', error);
+            throw error;
+        }
+    }
 }
 module.exports = userController;

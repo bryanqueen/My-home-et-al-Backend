@@ -8,7 +8,7 @@ const adminWalletSchema = new Schema({
         ref: 'Admin'
     },
     account_no: {
-        type: Number,
+        type: String,
         required: true
     },
     bvn: {

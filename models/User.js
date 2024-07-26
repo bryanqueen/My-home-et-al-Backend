@@ -70,6 +70,10 @@ const userSchema = new Schema({
     referredBy: {
         type: String,
         default: null
+    },
+    hasMadePurchase: {
+        type: Boolean,
+        default: false
     }
 
 });
