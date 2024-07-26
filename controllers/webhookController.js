@@ -4,7 +4,7 @@ const Transaction = require('../models/Transaction');
 
 // Function to verify the webhook signature
 function verifySignature(req) {
-    const signature = req.headers['x-wallet-signature'];
+    const signature = req.headers['x-swim-token'];
     const payload = JSON.stringify(req.body);
     const secret = process.env.POOLER_APIKEY;
     
