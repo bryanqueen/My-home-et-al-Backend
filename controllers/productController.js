@@ -23,7 +23,8 @@ const productController = {
                 modelNumber,
                 mainMaterial,
                 color,
-                keyFeatures 
+                keyFeatures,
+                size 
             } = req.body;
 
             // Create a new inventory document
@@ -61,7 +62,8 @@ const productController = {
                 modelNumber,
                 mainMaterial,
                 color,
-                keyFeatures: keyFeaturesArray
+                keyFeatures: keyFeaturesArray,
+                size
             });
 
             await product.save();
@@ -79,7 +81,7 @@ const productController = {
                 setTimeout(async () => {
                     await Product.findByIdAndUpdate(product._id, { isProductNew: false });
                 }, 1 * 10 * 60 * 1000); // 48 hours in milliseconds
-                    res.json({ message: 'Product Created Successfully' });
+                    res.json({ message: 'Product Created Successfully', product });
 
         } catch (error) {
             return res.status(500).json({error: error.message})
@@ -111,6 +113,7 @@ const productController = {
                     modelNumber: data.modelNumber,
                     mainMaterial: data.mainMaterial,
                     color: data.color,
+                    size: data.size,
                     keyFeatures: [
                         data.feature1,
                         data.feature2,
@@ -179,6 +182,7 @@ const productController = {
                     modelNumber: productData.modelNumber,
                     mainMaterial: productData.mainMaterial,
                     color: productData.color,
+                    size:  productData.color,
                     keyFeatures: productData.keyFeatures
                 });
     
@@ -329,15 +333,17 @@ const productController = {
                     modelNumber,
                     mainMaterial,
                     color,
-                    keyFeatures    
+                    keyFeatures,
+                    size   
                 },
                 {new: true}
             );
             if (!updatedProduct) {
                 return res.status(404).json({error: 'Product not found'})
             }
-            res.json({message: 'Product updated successfully'})
+            res.json({message: 'Product updated successfully', updatedProduct})
         } catch (error) {
+            console.error(error)
             return res.status(500).json({error: error.message})
         }
     },
