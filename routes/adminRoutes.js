@@ -19,7 +19,7 @@ router.patch('/activate/:id', authenticateAdmin, adminController.activateEmploye
 router.patch('/deactivate/:id', authenticateAdmin, adminController.deactivateEmployeeAdmin);
 
 //Extended Routes(private)
-router.get('/all-users', authenticateAdmin, adminController.fetchAllUsers);
+
 router.get('/all-users/:id', authenticateAdmin, adminController.getSingleUserDetails);
 
 

@@ -10,6 +10,7 @@ router.post('/sign-in', userController.signIn);
 router.post('/verify-otp', userController.verifyOtp);
 router.post('/resend-otp', userController.resendOtp);
 router.get('/product-categories', userController.getProductCategories)
+router.get('/all-users', userController.fetchAllUsers)
 
 
 
