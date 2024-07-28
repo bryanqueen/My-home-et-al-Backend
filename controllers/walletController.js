@@ -85,6 +85,26 @@ const walletController = {
             return res.status(500).json({error: error.message})
         }
     },
+    getWallet: async (req, res) => {
+        try {
+            const userId = req.user._id;
+    
+            // Check if req.user is defined
+            if (!req.user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+    
+            const wallet = await Wallet.findOne({user: userId});
+            if (!wallet) {
+                return res.status(404).json({ error: 'Wallet not found' });
+            }
+    
+            res.json(wallet);  // Return the wallet information
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+    ,
     getWalletPaymentDetails: async (req, res) => {
         try {
             

@@ -29,6 +29,9 @@ const userSchema = new Schema({
         type: String,
         required: false
     },
+    phone_number: {
+        type: String
+    },
     wallet: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Wallet'

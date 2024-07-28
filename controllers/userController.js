@@ -205,7 +205,8 @@ const userController = {
                 id: user._id,
                 email: user.email,
                 firstname: user.firstname,
-                lastname: user.lastname
+                lastname: user.lastname,
+                phone_number: user.phone_number
             }
 
             res.json({token, userProfile})
