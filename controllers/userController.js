@@ -303,13 +303,13 @@ const userController = {
     editAccountProfile: async (req, res) => {
         try {
             const userId = req.user._id
-            const { firstName, lastName, email, password, phone_number} = req.body;
+            const { firstname, lastname, email, password, phone_number} = req.body;
 
             const updatedProfile = await User.findByIdAndUpdate(
                 userId,
                 {
-                    firstName,
-                    lastName,
+                    firstname,
+                    lastname,
                     email,
                     password,
                     phone_number,
