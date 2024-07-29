@@ -27,8 +27,8 @@ const userController = {
             const otp = crypto.randomInt(10000, 100000);
             const otpExpiry = Date.now() + 10 * 60 * 1000;
 
-            const saltHash = 12;
-            const hashedPassword = await bcrypt.hash(password, saltHash);
+            const saltRounds = 12;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
             const newReferralCode = crypto.randomBytes(3).toString('hex').toUpperCase();
 
             const user = new User({
@@ -302,12 +302,18 @@ const userController = {
     
     editAccountProfile: async (req, res) => {
         try {
-            const userId = req.userId
-            const { firstName, lastName, email, password} = req.body;
+            const userId = req.user._id
+            const { firstName, lastName, email, password, phone_number} = req.body;
 
             const updatedProfile = await User.findByIdAndUpdate(
                 userId,
-                {firstName, lastName, email, password},
+                {
+                    firstName,
+                    lastName,
+                    email,
+                    password,
+                    phone_number,
+                },
                 {new: true}
             );
             
@@ -317,29 +323,31 @@ const userController = {
 
             res.json({mesage: 'Your Profile has been sucessfully updated'})
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'}) 
+            return res.status(500).json({error: error.message}) 
         }
     },
     deleteAccount: async (req, res) => {
         try {
 
             const {password} = req.body;
-            const userId = req.userId;
+            const userId = req.user._id
 
             const profile = await User.findById(userId);
 
             if (!profile){
                 return res.status(404).json({error: 'Not Found'})
             }
-            if(profile.password !== password){
-                return res.status(400).json({error: 'Invalid Password'})
+            // Compare the provided password with the hashed password
+            const isMatch = await bcrypt.compare(password, profile.password);
+            if (!isMatch) {
+                return res.status(400).json({ error: 'Invalid password' });
             }
             
             await User.findByIdAndDelete(userId);
             res.json({message: 'Account Deleted Successfully'})
             
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
     },
     getProductCategories: async (req, res) => {
