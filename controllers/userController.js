@@ -3,6 +3,7 @@ const ProductCategory = require('../models/ProductCategory');
 const Product = require('../models/Product')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Order = require('../models/Order');
 const crypto = require('crypto');
 const sendVerificationEmail = require('../utils/sendVerificationEmail');
 
@@ -298,13 +299,7 @@ const userController = {
         }
     },
     
-    getActiveUsers: async (req, res) => {
-        try {
-            
-        } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
-        }
-    },
+    
     editAccountProfile: async (req, res) => {
         try {
             const userId = req.userId
