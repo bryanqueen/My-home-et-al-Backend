@@ -258,14 +258,20 @@ const productController = {
         try {
             const productId = req.params.id;
 
-            const product = await Product.findById(productId);
+            const product = await Product.findById(productId).populate('category', 'name');
 
             if (!product) {
                 return res.status(404).json({message: 'Product not found'})
             }
-            res.json(product)
+            // Convert the product to a plain JavaScript object
+            const productObject = product.toObject();
+
+            // Add the category name to the response
+            productObject.categoryName = product.category ? product.category.name : null;
+
+            res.json(productObject);
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
     },
     searchForProduct: async (req, res) => {

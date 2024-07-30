@@ -10,7 +10,7 @@ const authenticateUser = require('../middlewares/authenticateUsers');
 //Private Routes
 router.post('/create-order', authenticateUser, orderController.createOrder);;
 router.get('/', orderController.getAllOrders);
-router.get('/:id', orderController.getSingleOrder);
 router.get('/purchase-history', authenticateUser, orderController.getUserPurchaseHistory)
+router.get('/:id', orderController.getSingleOrder);
 
 module.exports = router;

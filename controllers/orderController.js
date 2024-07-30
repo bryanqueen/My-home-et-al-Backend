@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
+const mongoose = require('mongoose');
 
 
 const orderController = {
@@ -97,17 +98,22 @@ const orderController = {
     getUserPurchaseHistory: async (req, res) => {
         try {
             const userId = req.user._id;
-
+            console.log('User ID:', userId);
+    
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                return res.status(400).json({ error: 'Invalid user ID' });
+            }
+    
             // Find orders associated with the user
             const orders = await Order.find({ user: userId });
-    
+     
             if (orders.length === 0) {
                 return res.status(404).json({ error: 'No orders found' });
             }
-    
+     
             res.json(orders);
         } catch (error) {
-
+            
             return res.status(500).json({ error: error.message });
         }
     },

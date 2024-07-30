@@ -51,7 +51,20 @@ app.use(`${path}/product-category`, productCategoryRoutes);
 app.use(`${path}/review`, reviewRoutes);
 app.use(`${path}/admin-wallet`, adminWalletRoutes);
 app.use(`${path}/order`, orderRoutes);
-app.use(`${path}/payment`, paymentRoutes)
+app.use(`${path}/payment`, paymentRoutes);
+app.use((err, req, res, next) => {
+    console.error('Global error handler:', err);
+    res.status(500).json({ error: err.message });
+  });
+app.use('*', (req, res) => {
+    console.log('Reached unknown route');
+    res.status(404).json({ error: 'Route not found' });
+ });
+ app.use((req, res, next) => {
+    console.log(`Request received: ${req.method} ${req.url}`);
+    next();
+  });
+
 
 //Webhook Route middleware
 // app.use(`${path}/webhook`, webhookRoutes);

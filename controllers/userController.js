@@ -305,13 +305,16 @@ const userController = {
             const userId = req.user._id
             const { firstname, lastname, email, password, phone_number} = req.body;
 
+            const saltRounds = 12;
+            const hashedPassword = await bcrypt.hash(password, saltRounds)
+
             const updatedProfile = await User.findByIdAndUpdate(
                 userId,
                 {
                     firstname,
                     lastname,
                     email,
-                    password,
+                    password: hashedPassword,
                     phone_number,
                 },
                 {new: true}
