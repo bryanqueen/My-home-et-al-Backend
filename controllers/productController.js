@@ -264,12 +264,12 @@ const productController = {
                 return res.status(404).json({message: 'Product not found'})
             }
             // Convert the product to a plain JavaScript object
-            const productObject = product.toObject();
+            // const productObject = product.toObject();
 
             // Add the category name to the response
-            productObject.categoryName = product.category ? product.category.name : null;
+            // productObject.categoryName = product.category ? product.category.name : null;
 
-            res.json(productObject);
+            res.json(product);
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
