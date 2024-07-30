@@ -77,7 +77,18 @@ const userSchema = new Schema({
     hasMadePurchase: {
         type: Boolean,
         default: false
-    }
+    },
+    referrals: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        status: {
+            type: String,
+            enum: ['signed_up', 'purchased'],
+            default: 'signed_up'
+        }
+    }]
 
 });
 

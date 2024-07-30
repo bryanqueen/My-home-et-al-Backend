@@ -16,15 +16,15 @@ router.get('/all-users', userController.fetchAllUsers)
 
 
 //Private Routes
-router.get('/:id',authenticateUser, userController.viewAccountProfile);
 router.post('/forgot-pass', authenticateUser, userController.forgotPassword);
 router.post('/reset-pass', authenticateUser, userController.resetPassword);
 router.get('/saved-items', authenticateUser, userController.getSavedItems );
-// router.get('/purchases', authenticateUser, userController.getUserPurchaseHistory);
-router.post('/save-item/:id', authenticateUser, userController.addSavedItem);
+router.get('/referrals', authenticateUser, userController.getUserReferrals);
 router.put('/edit-profile', authenticateUser, userController.editAccountProfile);
 router.delete('/saved-item', authenticateUser, userController.removeSavedItem);
 router.delete('/delete-account', authenticateUser, userController.deleteAccount);
+router.get('/:id',authenticateUser, userController.viewAccountProfile);
+router.post('/save-item/:id', authenticateUser, userController.addSavedItem);
 
 
 

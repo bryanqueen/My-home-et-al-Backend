@@ -31,6 +31,16 @@ const userController = {
             const hashedPassword = await bcrypt.hash(password, saltRounds);
             const newReferralCode = crypto.randomBytes(3).toString('hex').toUpperCase();
 
+            let referredBy = null;
+            let referrer = null;
+    
+            if (referralCode) {
+                referrer = await User.findOne({ referralCode: referralCode });
+                if (referrer) {
+                    referredBy = referralCode;
+                }
+            }
+    
             const user = new User({
                 email,
                 firstname,
@@ -40,14 +50,23 @@ const userController = {
                 otpExpiry,
                 referralCode: newReferralCode,
                 points: 100,
-                referredBy: referralCode ? referralCode : null
+                referredBy: referredBy
             });
-            
-            //send Email OTP
+    
+            // send Email OTP
             await sendVerificationEmail(email, otp)
-
+    
             user.isVerified = false;
-            await user.save(); 
+            await user.save();
+    
+            // If there's a valid referrer, add the new user to their referrals
+            if (referrer) {
+                referrer.referrals.push({
+                    user: user._id,
+                    status: 'signed_up'
+                });
+                await referrer.save();
+            }
 
 
             res.json({message: `We sent an OTP to ${email}, please verify `, referralCode: newReferralCode})
@@ -303,10 +322,10 @@ const userController = {
     editAccountProfile: async (req, res) => {
         try {
             const userId = req.user._id
-            const { firstname, lastname, email, password, phone_number} = req.body;
+            const { firstname, lastname, email, phone_number} = req.body;
 
-            const saltRounds = 12;
-            const hashedPassword = await bcrypt.hash(password, saltRounds)
+            // const saltRounds = 12;
+            // const hashedPassword = await bcrypt.hash(password, saltRounds)
 
             const updatedProfile = await User.findByIdAndUpdate(
                 userId,
@@ -314,7 +333,7 @@ const userController = {
                     firstname,
                     lastname,
                     email,
-                    password: hashedPassword,
+                    // password: hashedPassword,
                     phone_number,
                 },
                 {new: true}
@@ -368,7 +387,7 @@ const userController = {
     handlePurchaseAndReferralReward: async (userId) => {
         try {
             const user = await User.findById(userId);
-            
+        
             if (!user) {
                 throw new Error('User not found');
             }
@@ -382,9 +401,19 @@ const userController = {
                     const referrer = await User.findOne({ referralCode: user.referredBy });
                     
                     if (referrer) {
-                        // Add 400 points to the referrer
-                        referrer.points += 400;
-                        await referrer.save();
+                        // Update the referral status
+                        const referralIndex = referrer.referrals.findIndex(
+                            ref => ref.user.toString() === user._id.toString()
+                        );
+                        
+                        if (referralIndex !== -1) {
+                            referrer.referrals[referralIndex].status = 'purchased';
+                            
+                            // Add 400 points to the referrer
+                            referrer.points += 400;
+                            
+                            await referrer.save();
+                        }
                     }
                 }
     
@@ -395,6 +424,47 @@ const userController = {
         } catch (error) {
             console.error('Error handling purchase and referral reward:', error);
             throw error;
+        }
+    },
+    getUserReferrals: async (req, res) => {
+        try {
+            const userId = req.user._id;
+            const user = await User.findById(userId).populate('referrals.user', 'firstname lastname');
+            
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+    
+            const referrals = {
+                signedUp: user.referrals.filter(ref => ref.status === 'signed_up').map(ref => ({
+                    id: ref.user._id,
+                    firstname: ref.user.firstname,
+                    lastname: ref.user.lastname,
+                    pointsContributed: 0 // Users who have only signed up don't contribute points yet
+                })),
+                purchased: user.referrals.filter(ref => ref.status === 'purchased').map(ref => ({
+                    id: ref.user._id,
+                    firstname: ref.user.firstname,
+                    lastname: ref.user.lastname,
+                    pointsContributed: 400 // Users who have made a purchase contribute 400 points
+                }))
+            };
+    
+            // Calculate total points contributed
+            const totalEarnings = user.points
+    
+            res.json({
+                success: true,
+                data: {
+                    referrals,
+                    totalEarnings,
+                    totalReferrals: referrals.signedUp.length + referrals.purchased.length
+                },
+                message: 'Referrals retrieved successfully'
+            });
+        } catch (error) {
+            console.error('Error getting user referrals:', error);
+            res.status(500).json({ error: 'An error occurred while retrieving referrals' });
         }
     },
     fetchAllUsers: async (req, res) => {
