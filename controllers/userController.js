@@ -294,14 +294,14 @@ const userController = {
             const userId = req.user._id;
 
             //Find user by id and populate savedItems
-            const user = await user.findById(userId).populate('savedItems');
+            const user = await User.findById(userId).populate('savedItems', 'productTitle price images brand');
             if(!user){
                 return res.status(404).json({error: 'User not found, therefore savedItems can\'t not be retrieved'})
             }
 
             res.status(200).json({savedItems: user.savedItems})
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please retry'})
+            return res.status(500).json({error: error.message})
         }
     },
     viewAccountProfile: async (req, res) => {
