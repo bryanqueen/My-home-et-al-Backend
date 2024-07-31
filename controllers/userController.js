@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const Order = require('../models/Order');
 const crypto = require('crypto');
 const sendVerificationEmail = require('../utils/sendVerificationEmail');
+const sendPasswordResetEmail = require('../utils/sendResetEmail')
 
 
 
@@ -148,7 +149,7 @@ const userController = {
             const otpExpiry = Date.now() + 10 * 60 * 1000;
 
             //Send mail
-            await sendEmail(email, otp);
+            await sendPasswordResetEmail(email, otp);
 
             //Set the New OTP and it's expiry time
             user.otp = otp;

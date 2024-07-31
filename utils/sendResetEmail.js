@@ -1,0 +1,36 @@
+const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path')
+const transporter = nodemailer.createTransport({
+    host: "live.smtp.mailtrap.io",
+    port: 587,
+    auth: {
+    user: process.env.MAILTRAP_USERNAME,
+    pass: process.env.MAILTRAP_PASSWORD,
+    },
+    });
+
+
+    
+const sendPasswordResetEmail = async (email, otp) => {
+    
+    // Read the HTML template
+    const templatePath = path.join(__dirname, 'PasswordReset.html');
+    let html = fs.readFileSync(templatePath, 'utf8');
+
+    // Replace the placeholder with the actual OTP
+    html = html.replace('{{otp}}', otp);
+
+    console.log(`Sending OTP: ${otp} to ${email}`)
+
+    //Send mail
+    await transporter.sendMail({
+        from: 'My home et al verify@myhomeetal.com',
+        to: email,
+        subject: 'OTP to reset your password',
+        html
+        
+    });
+    
+}
+module.exports = sendPasswordResetEmail;
