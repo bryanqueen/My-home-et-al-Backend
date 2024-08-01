@@ -48,9 +48,10 @@ const userSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Notification'
     }],
-    deliveryAddress: {
-        type: String
-    },
+    addressBook: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Address'
+    }],
     otp: {
         type: Number,
         required: false
@@ -89,7 +90,6 @@ const userSchema = new Schema({
             default: 'signed_up'
         }
     }]
-
 });
 
 const User = model('User', userSchema);

@@ -25,9 +25,9 @@ const walletController = {
             } = req.body;
 
             //Hash BVN
-            const saltHash = 10;
+            const saltRounds = 10;
 
-            const hashedBvn = await bcrypt.hash(bvn, saltHash);
+            const hashedBvn = await bcrypt.hash(bvn, saltRounds);
 
             const payload = {
                 display_name,
