@@ -305,6 +305,76 @@ const userController = {
             return res.status(500).json({error: error.message})
         }
     },
+    addItemToCart: async (req, res) => {
+        try {
+            const userId = req.user._id;
+            const productId = req.params.id;
+
+            // Find the user by ID
+            const user = await User.findById(userId);
+
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            //Check if product exists
+            const product = await Product.findById(productId);
+            if(!product){
+                return res.status(404).json({error: 'Product Not found'})
+            }
+
+            // Initialize savedItems if it's undefined
+            if (!user.cart) {
+                user.cart = [];
+            }
+
+                //Add Saved items if not already added
+            if(!user.cart.includes(productId)){
+                user.cart.push(productId)
+                await user.save()
+            }
+
+            res.status(200).json({message: 'Product added to cart', cart: user.cart})
+        } catch (error) {
+            return res.status(500).json({error: error.message})
+        }
+    },
+    removeItemFromCart: async (req, res) => {
+        try {
+            const userId = req.user._id;
+            const {productId} = req.body
+
+            //Find user
+            const user = await User.findById(userId);
+            if(!user){
+                return res.status(404).json({error: 'User not found'})
+            }
+
+            //Remove product from saved items
+            user.cart = user.cart.filter(item => item.toString() !== productId);
+
+            await user.save();
+
+            res.status(200).json({message: 'Product removed from cart', cart: user.cart})
+        } catch (error) {
+            return res.status(500).json({error: 'Ooops!! an error occured, please retry'})
+        }
+    },
+    getItemsInCart: async (req, res) => {
+        try {
+            const userId = req.user._id;
+
+            //Find user by id and populate savedItems
+            const user = await User.findById(userId).populate('cart', 'productTitle price images brand');
+            if(!user){
+                return res.status(404).json({error: 'User not found, therefore items in cart can\'t be retrieved'})
+            }
+
+            res.status(200).json({savedItems: user.savedItems})
+        } catch (error) {
+            return res.status(500).json({error: error.message})
+        }
+    },
     viewAccountProfile: async (req, res) => {
         try {
             const userId = req.user._id

@@ -55,6 +55,8 @@ app.use(`${path}/admin-wallet`, adminWalletRoutes);
 app.use(`${path}/order`, orderRoutes);
 app.use(`${path}/payment`, paymentRoutes);
 app.use(`${path}/address`, addressRoutes);
+//Webhook Route middleware
+app.use(`${path}/webhook`, webhookRoutes);
 app.use((err, req, res, next) => {
     console.error('Global error handler:', err);
     res.status(500).json({ error: err.message });
@@ -69,8 +71,6 @@ app.use('*', (req, res) => {
   });
 
 
-//Webhook Route middleware
-app.use(`${path}/webhook`, webhookRoutes);
 
 //Database Connection must be established before listening to port
 connectDB()
