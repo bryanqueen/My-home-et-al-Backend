@@ -436,20 +436,13 @@ const userController = {
                 return res.status(404).json({ error: 'User not found' });
             }
     
-            const referrals = {
-                signedUp: user.referrals.filter(ref => ref.status === 'signed_up').map(ref => ({
-                    id: ref.user._id,
-                    firstname: ref.user.firstname,
-                    lastname: ref.user.lastname,
-                    pointsContributed: 0 // Users who have only signed up don't contribute points yet
-                })),
-                purchased: user.referrals.filter(ref => ref.status === 'purchased').map(ref => ({
-                    id: ref.user._id,
-                    firstname: ref.user.firstname,
-                    lastname: ref.user.lastname,
-                    pointsContributed: 400 // Users who have made a purchase contribute 400 points
-                }))
-            };
+            const referrals = user.referrals.map(ref => ({
+                id: ref.user._id,
+                firstname: ref.user.firstname,
+                lastname: ref.user.lastname,
+                status: ref.status,
+                pointsContributed: ref.status === 'purchased' ? 400 : 0
+            }));
     
             // Calculate total points contributed
             const totalEarnings = user.points
@@ -459,7 +452,7 @@ const userController = {
                 data: {
                     referrals,
                     totalEarnings,
-                    totalReferrals: referrals.signedUp.length + referrals.purchased.length
+                    totalReferrals: referrals.length
                 },
                 message: 'Referrals retrieved successfully'
             });

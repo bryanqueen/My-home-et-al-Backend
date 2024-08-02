@@ -35,10 +35,6 @@ const addressController = {
 
             //Find Addresses associated to a user
             const addresses = await Address.find({user: userId});
-
-            if (addresses.length === 0){
-                return res.status(404).json({error: 'No address found for this user'})
-            }
             
             res.json(addresses)
         } catch (error) {
