@@ -12,14 +12,16 @@ const transporter = nodemailer.createTransport({
 
 
     
-const sendPasswordResetEmail = async (email, otp) => {
+const sendPasswordResetEmail = async (email, otp, firstname) => {
     
     // Read the HTML template
     const templatePath = path.join(__dirname, 'PasswordReset.html');
     let html = fs.readFileSync(templatePath, 'utf8');
 
-    // Replace the placeholder with the actual OTP
+    // Replace the placeholder with the actual OTP and firstname
     html = html.replace('{{otp}}', otp);
+    html = html.replace('{{name}}', firstname)
+
 
     console.log(`Sending OTP: ${otp} to ${email}`)
 

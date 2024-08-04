@@ -110,11 +110,11 @@ const orderController = {
         }
     },
     
-    trackOrder: async (req, res) => {
+    ChangeOrderStatus: async (req, res) => {
         try {
-           
+            
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
     }
 };
