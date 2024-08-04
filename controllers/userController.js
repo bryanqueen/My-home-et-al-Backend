@@ -55,7 +55,7 @@ const userController = {
             });
     
             // send Email OTP
-            await sendVerificationEmail(email, otp)
+            await sendVerificationEmail(email, otp, firstname)
     
             user.isVerified = false;
             await user.save();

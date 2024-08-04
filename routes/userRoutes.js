@@ -19,12 +19,15 @@ router.get('/all-users', userController.fetchAllUsers)
 router.post('/forgot-pass', authenticateUser, userController.forgotPassword);
 router.post('/reset-pass', authenticateUser, userController.resetPassword);
 router.get('/saved-items', authenticateUser, userController.getSavedItems );
+router.get('/cart', authenticateUser, userController.getItemsInCart)
 router.get('/referrals', authenticateUser, userController.getUserReferrals);
 router.put('/edit-profile', authenticateUser, userController.editAccountProfile);
 router.delete('/saved-item', authenticateUser, userController.removeSavedItem);
+router.delete('/cart', authenticateUser, userController.removeItemFromCart);
 router.delete('/delete-account', authenticateUser, userController.deleteAccount);
 router.get('/:id',authenticateUser, userController.viewAccountProfile);
 router.post('/save-item/:id', authenticateUser, userController.addSavedItem);
+router.post('/cart/:id', authenticateUser, userController.addItemToCart);
 
 
 
