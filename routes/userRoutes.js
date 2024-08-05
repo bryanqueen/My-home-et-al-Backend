@@ -10,14 +10,14 @@ router.post('/sign-in', userController.signIn);
 router.post('/verify-otp', userController.verifyOtp);
 router.post('/resend-otp', userController.resendOtp);
 router.get('/product-categories', userController.getProductCategories)
-router.get('/all-users', userController.fetchAllUsers)
+router.get('/all-users', userController.fetchAllUsers);
+router.post('/forgot-pass', userController.forgotPassword);
+router.post('/reset-pass', userController.resetPassword);
 
 
 
 
 //Private Routes
-router.post('/forgot-pass', authenticateUser, userController.forgotPassword);
-router.post('/reset-pass', authenticateUser, userController.resetPassword);
 router.get('/saved-items', authenticateUser, userController.getSavedItems );
 router.get('/cart', authenticateUser, userController.getItemsInCart)
 router.get('/referrals', authenticateUser, userController.getUserReferrals);

@@ -17,6 +17,10 @@ const transactionSchema = new Schema({
         enum: ['Deposit', 'Purchase'],
         required: true
     },
+    order: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order'
+    }],
     date: {
         type: Date,
         default: Date.now()

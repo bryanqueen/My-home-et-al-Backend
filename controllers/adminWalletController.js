@@ -81,6 +81,21 @@ const adminWalletController = {
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
+    },
+    getAdminWallet: async (req, res) => {
+        try {
+            const adminId = req.admin._id;
+
+            const adminWallet = await AdminWallet.findOne({admin: adminId});
+
+            if(!adminWallet){
+                return res.status(404).json({error: 'Admin Wallet not found'})
+            }
+
+            res.json(adminWallet)
+        } catch (error) {
+            
+        }
     }
 };
 module.exports = adminWalletController;

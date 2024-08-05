@@ -106,7 +106,7 @@ const userController = {
     },
     resendOtp: async(req, res) => {
         try {
-            const {email} = req.body;
+            const {email, firstname} = req.body;
 
             //Check if user exists with the email
             const existingUser = await User.findOne({email});
@@ -120,7 +120,7 @@ const userController = {
             const otpExpiry = Date.now() + 10 * 60 * 1000;
 
             //Resend Mail
-            await sendVerificationEmail(email, otp)
+            await sendVerificationEmail(email, otp, firstname)
 
             //Set the New Otp and it's expiry time
             existingUser.otp = otp;
@@ -129,7 +129,7 @@ const userController = {
             //Re-save User to the database
             await existingUser.save()
 
-
+            res.json({message: `We sent an OTP to ${email}, please verify `})
         } catch (error) {
             return res.status(500).json({error: error.message})
         }

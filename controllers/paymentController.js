@@ -36,9 +36,9 @@ const paymentController = {
                 return res.status(404).json({error: 'Wallet not found'});
             }
             // Check if wallet has sufficient balance
-            // if(wallet.balance < amount){
-            //     return res.status(400).json({error: 'Insufficient wallet balance'})
-            // };
+            if(wallet.balance < amount){
+                return res.status(400).json({error: 'Insufficient wallet balance'})
+            };
 
             //Pooler Intra Transfer API Call
 
@@ -65,9 +65,9 @@ const paymentController = {
                 return response.data.message
             }
 
-            //Deduct amount from wallet balance
-            // wallet.balance -= amount;
-            // await wallet.save();
+            // Deduct amount from wallet balance
+            wallet.balance -= amount;
+            await wallet.save();
 
             //Record Payment in the database
             const payment = new Payment({
@@ -95,7 +95,7 @@ const paymentController = {
             // Update the order status to Pending
             const order = await Order.findOne({orderId: orderId});
             if (order) {
-                order.status = 'Pending';
+                order.status = 'Ongoing';
                 await order.save();
             }
             await userController.handlePurchaseAndReferralReward(userId)
