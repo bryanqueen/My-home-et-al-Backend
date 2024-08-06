@@ -63,9 +63,15 @@ async function handleIntraTransfer(data) {
         isAdminWallet = true;
     }
 
+    console.log('Updating wallet balance for:', isAdminWallet ? 'AdminWallet' : 'User Wallet');
+    console.log('Current balance:', wallet.balance);
+    console.log('Amount to be added:', parseFloat(amount));
+
     // Update the wallet balance
     wallet.balance += parseFloat(amount);
     await wallet.save();
+
+    console.log('Updated balance:', wallet.balance);
 
     // Create a new transaction
     const transaction = new Transaction({
@@ -78,12 +84,10 @@ async function handleIntraTransfer(data) {
     await transaction.save();
 
     // Add the transaction to the wallet's transactions array
-    if (isAdminWallet) {
-        wallet.transactions.push(transaction._id);
-    } else {
-        wallet.transactions.push(transaction._id);
-    }
+    wallet.transactions.push(transaction._id);
     await wallet.save();
+
+    console.log('Transaction saved:', transaction);
 }
 
 // Function to handle fund wallet
@@ -101,9 +105,15 @@ async function handleFundWallet(data) {
         isAdminWallet = true;
     }
 
+    console.log('Updating wallet balance for:', isAdminWallet ? 'AdminWallet' : 'User Wallet');
+    console.log('Current balance:', wallet.balance);
+    console.log('Amount to be added:', parseFloat(amount));
+
     // Update the wallet balance
     wallet.balance += parseFloat(amount);
     await wallet.save();
+
+    console.log('Updated balance:', wallet.balance);
 
     // Create a new transaction
     const transaction = new Transaction({
@@ -116,12 +126,10 @@ async function handleFundWallet(data) {
     await transaction.save();
 
     // Add the transaction to the wallet's transactions array
-    if (isAdminWallet) {
-        wallet.transactions.push(transaction._id);
-    } else {
-        wallet.transactions.push(transaction._id);
-    }
+    wallet.transactions.push(transaction._id);
     await wallet.save();
+
+    console.log('Transaction saved:', transaction);
 }
 
 module.exports = webhookController;
