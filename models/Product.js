@@ -55,6 +55,9 @@ const productSchema = new Schema({
     keyFeatures: [{
         type: String
     }],
+    sku: {
+        type: String
+    },
     createdAt: {
         type: Date,
         default: Date.now()

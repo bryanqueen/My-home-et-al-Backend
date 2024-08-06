@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const Wallet = require('../models/Wallet');
+const AdminWallet = require('../models/AdminWallet');
 const Transaction = require('../models/Transaction');
 
 // Function to verify the webhook signature
@@ -51,11 +52,15 @@ const webhookController = {
 async function handleIntraTransfer(data) {
     const { amount, target_account_number, reference, narration } = data;
 
-    // Find the wallet by account number
-    const wallet = await Wallet.findOne({ account_no: target_account_number });
+    let wallet = await Wallet.findOne({ account_no: target_account_number });
+    let isAdminWallet = false;
 
     if (!wallet) {
-        throw new Error('Wallet not found');
+        wallet = await AdminWallet.findOne({ account_no: target_account_number });
+        if (!wallet) {
+            throw new Error('Wallet not found');
+        }
+        isAdminWallet = true;
     }
 
     // Update the wallet balance
@@ -73,7 +78,11 @@ async function handleIntraTransfer(data) {
     await transaction.save();
 
     // Add the transaction to the wallet's transactions array
-    wallet.transactions.push(transaction._id);
+    if (isAdminWallet) {
+        wallet.transactions.push(transaction._id);
+    } else {
+        wallet.transactions.push(transaction._id);
+    }
     await wallet.save();
 }
 
@@ -81,11 +90,15 @@ async function handleIntraTransfer(data) {
 async function handleFundWallet(data) {
     const { amount, target_account_number, reference, narration } = data;
 
-    // Find the wallet by account number
-    const wallet = await Wallet.findOne({ account_no: target_account_number });
+    let wallet = await Wallet.findOne({ account_no: target_account_number });
+    let isAdminWallet = false;
 
     if (!wallet) {
-        throw new Error('Wallet not found');
+        wallet = await AdminWallet.findOne({ account_no: target_account_number });
+        if (!wallet) {
+            throw new Error('Wallet not found');
+        }
+        isAdminWallet = true;
     }
 
     // Update the wallet balance
@@ -103,7 +116,11 @@ async function handleFundWallet(data) {
     await transaction.save();
 
     // Add the transaction to the wallet's transactions array
-    wallet.transactions.push(transaction._id);
+    if (isAdminWallet) {
+        wallet.transactions.push(transaction._id);
+    } else {
+        wallet.transactions.push(transaction._id);
+    }
     await wallet.save();
 }
 

@@ -24,7 +24,8 @@ const productController = {
                 mainMaterial,
                 color,
                 keyFeatures,
-                size 
+                size,
+                sku
             } = req.body;
 
             // Create a new inventory document
@@ -63,7 +64,8 @@ const productController = {
                 mainMaterial,
                 color,
                 keyFeatures: keyFeaturesArray,
-                size
+                size,
+                sku
             });
 
             await product.save();
@@ -114,6 +116,7 @@ const productController = {
                     mainMaterial: data.mainMaterial,
                     color: data.color,
                     size: data.size,
+                    sku: data.sku,
                     keyFeatures: [
                         data.feature1,
                         data.feature2,
@@ -145,20 +148,20 @@ const productController = {
                 let category = null;
                 
                 if (productData.category) {
-                    console.log('Searching for category:', productData.category);
+                    // console.log('Searching for category:', productData.category);
     
                     category = await ProductCategory.findOne({name: { $regex: new RegExp('^' + productData.category + '$', 'i') }});
                     
-                    console.log('Found category:', category);
+                    // console.log('Found category:', category);
     
                     if (!category) {
-                        console.log('Category not found. Creating new category:', productData.category);
+                        // console.log('Category not found. Creating new category:', productData.category);
                         category = new ProductCategory({
                             name: productData.category,
                             products: []
                         });
                         await category.save();
-                        console.log('New category created:', category);
+                        // console.log('New category created:', category);
                     }
                 }
     
@@ -183,10 +186,11 @@ const productController = {
                     mainMaterial: productData.mainMaterial,
                     color: productData.color,
                     size:  productData.color,
+                    sku: productData.sku,
                     keyFeatures: productData.keyFeatures
                 });
     
-                console.log('Product to be saved:', product);
+                // console.log('Product to be saved:', product);
     
                 const savedProduct = await product.save();
                 publishedProductsIds.push(savedProduct._id);
@@ -212,7 +216,7 @@ const productController = {
         try {
             // Get the category id
             const categoryId = req.params.id;
-            console.log('Category ID:', categoryId);
+            // console.log('Category ID:', categoryId);
     
             // Retrieve ProductCategory by ID
             const productCategory = await ProductCategory.findById(categoryId);
@@ -222,19 +226,19 @@ const productController = {
                 return res.status(404).json({error: 'Product Category not found'});
             }
     
-            console.log('Product Category:', productCategory.name);
-            console.log('Number of products in category:', productCategory.products.length);
+            // console.log('Product Category:', productCategory.name);
+            // console.log('Number of products in category:', productCategory.products.length);
     
             // Fetch all products in the category
-            const products = await Product.find({_id: {$in: productCategory.products}});
+            const products = await Product.find({_id: {$in: productCategory.products}}).populate('category', 'name');
     
             console.log('Number of products fetched:', products.length);
     
             // Reverse the order of products
             const reversedProducts = products.reverse();
     
-            console.log('First product after reversal:', reversedProducts[0]?.productTitle);
-            console.log('Last product after reversal:', reversedProducts[reversedProducts.length - 1]?.productTitle);
+            // console.log('First product after reversal:', reversedProducts[0]?.productTitle);
+            // console.log('Last product after reversal:', reversedProducts[reversedProducts.length - 1]?.productTitle);
     
             res.json(reversedProducts);
         } catch (error) {
@@ -324,33 +328,95 @@ const productController = {
    
     editProduct: async (req, res) => {
         try {
-            const productId = req.params.id;
-
-            const updatedProduct = await Product.findByIdAndUpdate(
-                productId,
-                {
-                    productTitle,
-                    price,
-                    category,
-                    description,
-                    images,
-                    inventory,
-                    brand,
-                    modelNumber,
-                    mainMaterial,
-                    color,
-                    keyFeatures,
-                    size   
-                },
-                {new: true}
-            );
-            if (!updatedProduct) {
-                return res.status(404).json({error: 'Product not found'})
+            const { productId } = req.params; // Get the product ID from the request parameters
+            const {
+                productTitle, 
+                price, 
+                category, 
+                description, 
+                inventory, 
+                brand,
+                weight,
+                modelNumber,
+                mainMaterial,
+                color,
+                keyFeatures,
+                size,
+                sku
+            } = req.body;
+    
+            // Find the existing product by ID
+            const product = await Product.findById(productId);
+            if (!product) {
+                return res.status(404).json({ error: 'Product not found' });
             }
-            res.json({message: 'Product updated successfully', updatedProduct})
+    
+            // Update the inventory if it exists
+            if (inventory !== undefined) {
+                const inventoryUpdate = await Inventory.findById(product.inventory);
+                if (inventoryUpdate) {
+                    inventoryUpdate.quantity = Number(inventory);
+                    await inventoryUpdate.save();
+                }
+            }
+    
+            // Handle image uploads if new files are provided
+            let imageUrls = product.images; // Keep existing images by default
+    
+            if (req.files && req.files.length > 0) {
+                const uploadPromises = req.files.map(file => {
+                    return cloudinary.uploader.upload(file.path, {
+                        folder: 'product_images'
+                    });
+                });
+    
+                const imageResults = await Promise.all(uploadPromises);
+                const newImageUrls = imageResults.map(result => result.secure_url);
+                imageUrls = [...imageUrls, ...newImageUrls]; // Combine existing images with new ones
+            }
+    
+            // Handle keyFeatures array
+            const keyFeaturesArray = Array.isArray(keyFeatures) ? keyFeatures : [keyFeatures];
+    
+            // Update product fields
+            product.productTitle = productTitle || product.productTitle;
+            product.price = price || product.price;
+            product.category = category || product.category;
+            product.description = description || product.description;
+            product.images = imageUrls;
+            product.brand = brand || product.brand;
+            product.weight = weight || product.weight;
+            product.modelNumber = modelNumber || product.modelNumber;
+            product.mainMaterial = mainMaterial || product.mainMaterial;
+            product.color = color || product.color;
+            product.keyFeatures = keyFeaturesArray.length > 0 ? keyFeaturesArray : product.keyFeatures;
+            product.size = size || product.size;
+            product.sku = sku || product.sku;
+    
+            // Save the updated product
+            await product.save();
+    
+            // Check if the product category has changed
+            if (category && category !== product.category.toString()) {
+                const oldCategory = await ProductCategory.findById(product.category);
+                const newCategory = await ProductCategory.findById(category).populate('products');
+    
+                // Remove product from old category
+                if (oldCategory) {
+                    oldCategory.products.pull(product._id);
+                    await oldCategory.save();
+                }
+    
+                // Add the product to the new category
+                if (newCategory) {
+                    newCategory.products.push(product);
+                    await newCategory.save();
+                }
+            }
+    
+            return res.status(200).json({ message: 'Product updated successfully', product });
         } catch (error) {
-            console.error(error)
-            return res.status(500).json({error: error.message})
+            return res.status(500).json({ error: error.message });
         }
     },
     deleteProduct: async (req, res) => {

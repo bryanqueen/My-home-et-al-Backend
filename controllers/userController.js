@@ -370,7 +370,7 @@ const userController = {
                 return res.status(404).json({error: 'User not found, therefore items in cart can\'t be retrieved'})
             }
 
-            res.status(200).json({savedItems: user.savedItems})
+            res.status(200).json({cart: user.cart})
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
