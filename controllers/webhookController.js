@@ -74,20 +74,20 @@ async function handleIntraTransfer(data) {
     console.log('Updated balance:', wallet.balance);
 
     // Create a new transaction
-    const transaction = new Transaction({
-        wallet: wallet._id,
-        amount: parseFloat(amount),
-        type: 'Purchase',
-        reference,
-        narration
-    });
-    await transaction.save();
+    // const transaction = new Transaction({
+    //     wallet: wallet._id,
+    //     amount: parseFloat(amount),
+    //     type: 'Purchase',
+    //     reference,
+    //     narration
+    // });
+    // await transaction.save();
 
-    // Add the transaction to the wallet's transactions array
-    wallet.transactions.push(transaction._id);
-    await wallet.save();
+    // // Add the transaction to the wallet's transactions array
+    // wallet.transactions.push(transaction._id);
+    // await wallet.save();
 
-    console.log('Transaction saved:', transaction);
+    // console.log('Transaction saved:', transaction);
 }
 
 // Function to handle fund wallet

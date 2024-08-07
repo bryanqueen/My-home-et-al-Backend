@@ -19,7 +19,7 @@ const orderSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['Not paid',, 'Ongoing', 'Delivered'],
+        enum: ['Not paid', 'Ongoing', 'Delivered'],
         default: 'Not paid'
     },
     address: {

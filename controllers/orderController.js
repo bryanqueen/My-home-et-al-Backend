@@ -1,6 +1,6 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
-const mongoose = require('mongoose');
+
 
 
 const orderController = {
@@ -84,17 +84,40 @@ const orderController = {
     getSingleOrder: async (req, res) => {
         try {
             const orderId = req.params.id;
-
-            const order = await Order.findById(orderId);
-
-            if(!order){
-                return res.status(404).json({error: 'Order Not found'})
+    
+            // Find the order and populate user and orderItems with product details
+            const order = await Order.findById(orderId)
+                .populate({
+                    path: 'user',
+                    select: 'firstname email phone_number' // Specify the fields to return
+                })
+                .populate({
+                    path: 'orderItems.product', // Assuming orderItems has a field 'product' that references Product
+                    select: 'productTitle' // Specify the fields to return from Product
+                });
+    
+            if (!order) {
+                return res.status(404).json({ error: 'Order Not found' });
             }
-            res.json(order)
+    
+            // Map the orderItems to include productTitle
+            const orderItemsWithTitles = order.orderItems.map(item => {
+                return {
+                    ...item.toObject(), // Convert Mongoose document to plain object
+                    productTitle: item.product ? item.product.productTitle : null // Add productTitle
+                };
+            });
+    
+            // Return the order with modified orderItems
+            res.json({
+                ...order.toObject(), // Convert order to plain object
+                orderItems: orderItemsWithTitles // Replace orderItems with the new array
+            });
         } catch (error) {
-            return res.status(500).json({error: error.message})
+            return res.status(500).json({ error: error.message });
         }
-    },
+    }
+    ,
     getUserPurchaseHistory: async (req, res) => {
         try {
             const userId = req.user._id;
@@ -110,9 +133,17 @@ const orderController = {
         }
     },
     
-    ChangeOrderStatus: async (req, res) => {
+    updateOrderStatusToCompleted: async (req, res) => {
         try {
-            
+            const {orderId} = req.body;
+
+            const order = await Order.findOne({orderId});
+
+            if(order){
+                order.status = 'Delivered'
+                await order.save();  
+            }
+            res.json({message: 'Order status updated successfully', order})
         } catch (error) {
             return res.status(500).json({error: error.message})
         }

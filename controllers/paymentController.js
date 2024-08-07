@@ -6,7 +6,8 @@ const Order = require('../models/Order');
 const axios = require('axios');
 const { createPayment } = require('../config/rexPay');
 const userController = require('./userController');
-const Inventory = require('../models/Inventory')
+const Inventory = require('../models/Inventory');
+const User = require('../models/User');
 
 const paymentController = {
     makeWalletPayment: async (req, res) => {
@@ -17,8 +18,15 @@ const paymentController = {
                 narration,
                 amount,
                 from_account_number,
+                points
             } = req.body;
-    
+
+            const user = await User.findById(userId);
+
+            if(points > 0){
+                user.points -= points
+            }
+            await user.save()
             const fetchAdminWallet = await AdminWallet.find();
             if(!fetchAdminWallet){
                 return res.status(404).json({error: 'No admin account was found'});
@@ -80,6 +88,7 @@ const paymentController = {
                 wallet: wallet._id,
                 amount: -amount,
                 type: 'Purchase',
+                order: orderId
             });
             await transaction.save();
     
@@ -110,7 +119,30 @@ const paymentController = {
             return res.status(500).json({error: error.message});
         }
     },
+    UpdateOrderStatusWithSpay: async (req, res) => {
+        try {
+            const {orderId} = req.body;
 
+            const order = await Order.findOne({orderId: orderId});
+
+            if(!order){
+                return res.status(404).json({error: 'Order not found'})
+            }
+            order.status = 'Ongoing'
+            await order.save();
+
+            // Update the order status to Ongoing
+            for (let item of order.orderItems) {
+                await Inventory.findOneAndUpdate(
+                    { product: item.product },
+                    { $inc: { quantity: -item.qty } }
+                );
+            }
+
+        } catch (error) {
+            return res.status(500).json({error: error.message})
+        }
+    },
     initiateRexpayPayment: async(req, res) => {
         try {
             const paymentDetails = {
@@ -128,6 +160,7 @@ const paymentController = {
             console.error('Payment initiation failed:', error);
             res.status(500).json({ error: 'Failed to initiate payment' });
           }
-    }
+    },
+
 };
 module.exports = paymentController;

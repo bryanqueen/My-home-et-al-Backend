@@ -82,7 +82,7 @@ const adminWalletController = {
             return res.status(500).json({error: error.message})
         }
     },
-    getAdminWallet: async (req, res) => {
+    getAdminWalletandTransactions: async (req, res) => {
         try {
             const adminId = req.admin._id;
 
@@ -95,6 +95,13 @@ const adminWalletController = {
             res.json(adminWallet)
         } catch (error) {
             
+        }
+    },
+    getAdminWalletTransactions: async (req, res) => {
+        try {
+
+        } catch (error) {
+            return res.status(500).json({error: error.message})
         }
     }
 };

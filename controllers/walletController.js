@@ -110,28 +110,11 @@ const walletController = {
         try {
             const userId = req.user._id;
         
-            const user = await User.findById(userId).populate({
-                path: 'wallet',
-                populate: {
-                    path: 'transactions',
-                    populate: {
-                        path: 'order',
-                        select: 'orderId status'
-                    }
-                }
-            });
-    
-            if (!user || !user.wallet) {
-                return res.status(404).json({ error: 'Wallet not found' });
+            const wallet = await Wallet.findOne({user: userId}).populate('transactions', 'amount type date order.orderId');
+            if(!wallet){
+                return res.status(500).json({error: 'Wallet not found'})
             }
-    
-            const transactions = user.wallet.transactions.map(transaction => ({
-                orderId: transaction.orderId,
-                amountPaid: transaction.orderPrice,
-                date: transaction.date
-            }));
-    
-            res.json({ transactions });
+            res.json(wallet.transactions);
 
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please try again'})
