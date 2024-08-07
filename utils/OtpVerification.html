@@ -3,107 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-    <style>
-        @font-face {
-            font-family: Clash;
-            src: url(./assets/ClashDisplay-Variable.ttf);
-        }
-        .body{
-            font-family: Clash;
-            padding: 28px 0;
-            background-color: #EAEAEA;
-        }
-        .header{
-            display: block;
-            width: 95px;
-            margin: auto;
-        }
-        .px-48{
-            padding: 0 48px;
-        }
-        .main{
-            background-color: #fff;
-            padding: 60px 40px;
-            margin-bottom: 35px;
-        }
-        .mb-56{
-            margin-bottom: 56px;
-        }
-        .footer{
-            background-color: #fff;
-            padding: 50px 0;
-        }
-        .hello{
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .mb-22{
-            margin-bottom: 22px;
-        }
-        .red{
-            color: #ED2224;            
-        }
-        .normal-text{
-            font-size: 12px;
-            font-weight: 400;
-        }
-        .otp{
-            background-color: #EAEAEA;
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            padding: 18px 0;
-            margin-bottom: 15px;
-        }
-        .otp-code{
-            font-family: Clash;
-            font-size: 16.99px;
-            font-weight: 600;
-        }
-        .small-text{
-            font-size: 10px;
-            font-weight: 400;
-            text-align: center;
-        }
-        .copyright{
-            text-align: center;
-            font-size: 10px;
-            font-weight: 300;
-
-        }
-        @media screen and (max-width: 490px) {
-            .px-48{
-            padding: 0 20px;
-            }
-            .footer{
-                padding: 10px;
-            }
-        }
-
-    </style>
+    <title>Email Verification</title>
 </head>
-<body class="body">
-    <header class="header mb-56">
-        <img src="https://www.myhomeetal.com/logo3.svg" alt="logo">
+<body style="font-family: Clash; padding: 28px 0; background-color: #EAEAEA; margin: 0;">
+    <header style="text-align: center; margin-bottom: 56px;">
+        <img src="https://www.myhomeetal.com/logo3.svg" alt="logo" style="width: 95px;">
     </header>
 
-    <div class="px-48">
-        <main class="main">
-            <div class="hello mb-22">Hello {{name}},</div>
-            <div class="red hello">Email OTP Verification</div>
-            <p class="normal-text mb-56">Below is your one time passcode that you need to use to complete your authentication. The verification code will be valid for 10 minutes. Please do not share this code with anyone.</p>
-            <div class="otp">
-                <span class="otp-code red">{{otp}}</span>
+    <div style="padding: 0 48px;">
+        <main style="background-color: #fff; padding: 60px 40px; margin-bottom: 35px;">
+            <div style="font-size: 12px; font-weight: 500; margin-bottom: 22px;">Hello {{name}},</div>
+            <div style="color: #ED2224; font-size: 12px; font-weight: 500;">Email OTP Verification</div>
+            <p style="font-size: 12px; font-weight: 400; margin-bottom: 56px;">Below is your one time passcode that you need to use to complete your authentication. The verification code will be valid for 10 minutes. Please do not share this code with anyone.</p>
+            <div style="background-color: #EAEAEA; display: flex; justify-content: center; gap: 25px; padding: 18px 0; margin-bottom: 15px;">
+                <span style="color: #ED2224; font-size: 16.99px; font-weight: 600;">{{otp}}</span>
             </div>
-            <p class="small-text">If you are having any issues with your account, please don't hesitate to <span class="red"><a href="">contact us.</a></span></p>
-    
+            <p style="font-size: 10px; font-weight: 400; text-align: center;">If you are having any issues with your account, please don't hesitate to <span style="color: #ED2224;"><a href="">contact us.</a></span></p>
         </main>
     
-        <footer class="footer">
-            <p class="copyright">© Copyright 2024 - Myhomeetal | All Rights Reserved</p>
+        <footer style="background-color: #fff; padding: 50px 0; text-align: center;">
+            <p style="font-size: 10px; font-weight: 300;">© Copyright 2024 - Myhomeetal | All Rights Reserved</p>
         </footer>
     </div>
-    
 </body>
 </html>
