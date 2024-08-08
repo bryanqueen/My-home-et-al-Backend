@@ -18,8 +18,8 @@ const transactionSchema = new Schema({
         required: true
     },
     order: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Order'
+        type: String,
+        required: true
     },
     date: {
         type: Date,

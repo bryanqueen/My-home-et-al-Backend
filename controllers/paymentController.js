@@ -8,6 +8,7 @@ const { createPayment } = require('../config/rexPay');
 const userController = require('./userController');
 const Inventory = require('../models/Inventory');
 const User = require('../models/User');
+const mongoose = require('mongoose')
 
 const paymentController = {
     makeWalletPayment: async (req, res) => {
@@ -21,12 +22,17 @@ const paymentController = {
                 points
             } = req.body;
 
+   
+
             const user = await User.findById(userId);
 
             if(points > 0){
+                if (user.points < points) {
+                    return res.status(400).json({error: 'Insufficient points'});
+                }
                 user.points -= points
+                await user.save();
             }
-            await user.save()
             const fetchAdminWallet = await AdminWallet.find();
             if(!fetchAdminWallet){
                 return res.status(404).json({error: 'No admin account was found'});
@@ -138,7 +144,7 @@ const paymentController = {
                     { $inc: { quantity: -item.qty } }
                 );
             }
-
+            res.json({message: 'Payment Confirmed as successful', order})
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
