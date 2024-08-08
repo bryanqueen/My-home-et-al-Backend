@@ -127,8 +127,19 @@ const paymentController = {
     },
     UpdateOrderStatusWithSpay: async (req, res) => {
         try {
-            const {orderId} = req.body;
+            const userId = req.user._id;
+            const {orderId, points} = req.body;
 
+            const user = await User.findById(userId);
+
+            if(points > 0){
+                if (user.points < points) {
+                    return res.status(400).json({error: 'Insufficient points'});
+                }
+                user.points -= points
+                await user.save();
+            }
+            
             const order = await Order.findOne({orderId: orderId});
 
             if(!order){

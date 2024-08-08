@@ -248,11 +248,8 @@ const productController = {
     },
     fetchAllProducts: async (req, res) => {
         try {
-            const totalProducts = await Product.find();
+            const totalProducts = await Product.find().populate('category', 'name')
             
-            if(!totalProducts){
-                return res.status(400).json({error: 'No products found'})
-            }
             res.json(totalProducts)
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})

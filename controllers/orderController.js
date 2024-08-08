@@ -72,10 +72,7 @@ const orderController = {
     // },
     getAllOrders: async (req, res) => {
         try {
-            const orders = await Order.find();
-            if(!orders){
-                return res.status(404).json({error: 'No orders found'})
-            }
+            const orders = await Order.find().populate('user', 'firstname lastname')
             res.json(orders)
         } catch (error) {
             return res.status(500).json({error: error.message})
