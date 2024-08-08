@@ -23,7 +23,8 @@ const orderSchema = new Schema({
         default: 'Not paid'
     },
     address: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Address',
         required: true
     },
     orderPrice: {

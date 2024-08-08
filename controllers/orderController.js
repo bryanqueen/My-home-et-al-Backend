@@ -72,7 +72,9 @@ const orderController = {
     // },
     getAllOrders: async (req, res) => {
         try {
-            const orders = await Order.find().populate('user', 'firstname lastname')
+            const orders = await Order.find()
+            .populate('user', 'firstname lastname')
+            .populate('address', 'deliveryAddress phone_number city')
             res.json(orders)
         } catch (error) {
             return res.status(500).json({error: error.message})
@@ -91,7 +93,11 @@ const orderController = {
                 .populate({
                     path: 'orderItems.product', // Assuming orderItems has a field 'product' that references Product
                     select: 'productTitle' // Specify the fields to return from Product
-                });
+                })
+                .populate({
+                    path: 'address',
+                    select: 'deliveryAddress city phone_number'
+                })
     
             if (!order) {
                 return res.status(404).json({ error: 'Order Not found' });
