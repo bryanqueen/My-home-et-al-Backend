@@ -123,8 +123,7 @@ const productController = {
                         data.feature3,
                         data.feature4,
                         data.feature5,
-                        data.feature6,
-                        data.feature7
+                        data.feature6
                     ].filter(Boolean)
                 };
                 products.push(product)
@@ -248,7 +247,7 @@ const productController = {
     },
     fetchAllProducts: async (req, res) => {
         try {
-            const totalProducts = await Product.find().populate('category', 'name')
+            const totalProducts = await Product.find().populate('category', 'name').populate('inventory', 'quantity' )
             
             res.json(totalProducts)
         } catch (error) {
@@ -259,7 +258,7 @@ const productController = {
         try {
             const productId = req.params.id;
 
-            const product = await Product.findById(productId).populate('category', 'name').populate('review', 'rating comment date')
+            const product = await Product.findById(productId).populate('category', 'name').populate('review', 'rating comment date').populate('inventory', 'quantity')
 
             if (!product) {
                 return res.status(404).json({message: 'Product not found'})
