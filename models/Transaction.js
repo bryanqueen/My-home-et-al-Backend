@@ -19,7 +19,6 @@ const transactionSchema = new Schema({
     },
     order: {
         type: String,
-        required: true
     },
     date: {
         type: Date,

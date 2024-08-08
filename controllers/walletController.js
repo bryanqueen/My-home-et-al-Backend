@@ -110,7 +110,7 @@ const walletController = {
         try {
             const userId = req.user._id;
         
-            const wallet = await Wallet.findOne({user: userId}).populate('transactions', 'amount type date order.orderId');
+            const wallet = await Wallet.findOne({user: userId}).populate('transactions', 'amount type date order');
             if(!wallet){
                 return res.status(500).json({error: 'Wallet not found'})
             }
