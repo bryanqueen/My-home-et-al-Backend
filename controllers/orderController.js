@@ -6,19 +6,15 @@ const User = require('../models/User');
 const orderController = {
     createOrder: async (req, res) => {
         try {
-            const userId = req.user._id
-            const { address, 
-                    orderPrice, 
-                    orderItems, 
-                    deliveryMethod,
-                    paymentMethod
-                  } = req.body;
-        if(!userId){
-            return res.status(400).json({error: ''})
-        }
-
-        const orderId = Math.floor(Math.random() * 10**13).toString().padStart(13, '0');
-
+            const userId = req.user._id;
+            const { address, orderPrice, orderItems, deliveryMethod, paymentMethod } = req.body;
+    
+            if (!userId) {
+                return res.status(400).json({ error: 'User ID is required' });
+            }
+    
+            const orderId = Math.floor(Math.random() * 10 ** 13).toString().padStart(13, '0');
+    
             const newOrder = new Order({
                 orderId,
                 user: userId,
@@ -29,16 +25,27 @@ const orderController = {
                 paymentMethod
             });
             await newOrder.save();
-
-        // Update user's purchase history
-        const user = await User.findById(userId);
-        user.purchaseHistory.push(newOrder._id);
-        await user.save();
-            res.json({message: 'Order Created Successfully', newOrder})
+    
+            // Update user's purchase history
+            const user = await User.findById(userId);
+            user.purchaseHistory.push(newOrder._id);
+            await user.save();
+    
+            // Set a timer to delete the order after 30 minutes if its status is still 'Not paid'
+            setTimeout(async () => {
+                const order = await Order.findById(newOrder._id);
+                if (order && order.status === 'Not paid') {
+                    await order.remove();
+                    console.log(`Order ${order.orderId} deleted after 30 minutes due to 'Not paid' status.`);
+                }
+            }, 30 * 60 * 1000); // 30 minutes in milliseconds
+    
+            res.json({ message: 'Order Created Successfully', newOrder });
         } catch (error) {
-            return res.status(500).json({error: error.message})
+            return res.status(500).json({ error: error.message });
         }
-    },
+    }
+    ,
     // const getAllOrdersWithPagination = async (req, res) => {
     //     try {
     //         const { page = 1, limit = 10, sortBy = 'createdAt', order = 'desc' } = req.query;
