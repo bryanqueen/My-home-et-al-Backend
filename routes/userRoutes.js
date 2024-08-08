@@ -22,6 +22,7 @@ router.get('/saved-items', authenticateUser, userController.getSavedItems );
 router.get('/cart', authenticateUser, userController.getItemsInCart)
 router.get('/referrals', authenticateUser, userController.getUserReferrals);
 router.put('/edit-profile', authenticateUser, userController.editAccountProfile);
+router.put('/cart', authenticateUser, userController.decrementCartItem)
 router.delete('/saved-item', authenticateUser, userController.removeSavedItem);
 router.delete('/cart', authenticateUser, userController.removeItemFromCart);
 router.delete('/delete-account', authenticateUser, userController.deleteAccount);

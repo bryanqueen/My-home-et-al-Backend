@@ -309,33 +309,68 @@ const userController = {
         try {
             const userId = req.user._id;
             const productId = req.params.id;
-
+    
             // Find the user by ID
             const user = await User.findById(userId);
-
             if (!user) {
                 return res.status(404).json({ error: 'User not found' });
             }
-
-            //Check if product exists
+    
+            // Check if product exists
             const product = await Product.findById(productId);
-            if(!product){
-                return res.status(404).json({error: 'Product Not found'})
+            if (!product) {
+                return res.status(404).json({ error: 'Product Not found' });
             }
-
-            // Initialize savedItems if it's undefined
+    
+            // Initialize cart if it's undefined
             if (!user.cart) {
                 user.cart = [];
             }
-
-                //Add Saved items if not already added
-            if(!user.cart.includes(productId)){
-                user.cart.push(productId)
-                await user.save()
+    
+            // Check if the product is already in the cart
+            const cartItem = user.cart.find(item => item.product.toString() === productId);
+            if (cartItem) {
+                // If it exists, increment the quantity
+                cartItem.qty += 1;
+            } else {
+                // If it doesn't exist, add it to the cart with qty of 1
+                user.cart.push({ product: productId, qty: 1 });
             }
-
-            res.status(200).json({message: 'Product added to cart', cart: user.cart})
+    
+            await user.save();
+            res.status(200).json({ message: 'Product added to cart', cart: user.cart });
         } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    },
+    decrementCartItem: async (req, res) => {
+        try{
+            const userId = req.user._id;
+            const { productId } = req.body;
+    
+            // Find user
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+    
+            // Find the cart item
+            const cartItem = user.cart.find(item => item.product.toString() === productId);
+            if (cartItem) {
+                // Decrement the quantity
+                cartItem.qty -= 1;
+    
+                // If quantity is zero, remove the item from the cart
+                if (cartItem.qty <= 0) {
+                    user.cart = user.cart.filter(item => item.product.toString() !== productId);
+                }
+    
+                await user.save();
+                res.status(200).json({ message: 'Product quantity updated', cart: user.cart });
+            } else {
+                return res.status(404).json({ error: 'Product not found in cart' });
+            }
+        } catch (error){
             return res.status(500).json({error: error.message})
         }
     },
@@ -357,22 +392,22 @@ const userController = {
 
             res.status(200).json({message: 'Product removed from cart', cart: user.cart})
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please retry'})
+            return res.status(500).json({error: error.message})
         }
     },
     getItemsInCart: async (req, res) => {
         try {
             const userId = req.user._id;
-
-            //Find user by id and populate savedItems
-            const user = await User.findById(userId).populate('cart', 'productTitle price images brand');
-            if(!user){
-                return res.status(404).json({error: 'User not found, therefore items in cart can\'t be retrieved'})
+    
+            // Find user by id and populate cart items
+            const user = await User.findById(userId).populate('cart.product', 'productTitle price images brand');
+            if (!user) {
+                return res.status(404).json({ error: 'User not found, therefore items in cart can\'t be retrieved' });
             }
-
-            res.status(200).json({cart: user.cart})
+    
+            res.status(200).json({ cart: user.cart });
         } catch (error) {
-            return res.status(500).json({error: error.message})
+            return res.status(500).json({ error: error.message });
         }
     },
     viewAccountProfile: async (req, res) => {

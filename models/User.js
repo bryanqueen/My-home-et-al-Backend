@@ -40,10 +40,19 @@ const userSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
     }],
-    cart: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product'
-    }],
+    cart: [
+        {
+            product: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product',
+                required: true
+            },
+            qty: {
+                type: Number,
+                default: 1
+            }
+        }
+    ],
     purchaseHistory: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order'
