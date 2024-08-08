@@ -9,11 +9,11 @@ const authenticateAdmin = require('../middlewares/authenticateAdmin');
 
 //Private Routes
 router.post('/create-order', authenticateUser, orderController.createOrder);;
-router.get('/', orderController.getAllOrders);
 router.get('/purchase-history', authenticateUser, orderController.getUserPurchaseHistory);
 router.put('/update-status', authenticateAdmin, orderController.updateOrderStatusToCompleted )
 
 //public Routes
+router.get('/', orderController.getAllOrders);
 router.get('/:id', orderController.getSingleOrder);
 
 module.exports = router;

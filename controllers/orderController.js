@@ -86,7 +86,7 @@ const orderController = {
             const order = await Order.findById(orderId)
                 .populate({
                     path: 'user',
-                    select: 'firstname email phone_number' // Specify the fields to return
+                    select: 'firstname lastname email phone_number' // Specify the fields to return
                 })
                 .populate({
                     path: 'orderItems.product', // Assuming orderItems has a field 'product' that references Product
