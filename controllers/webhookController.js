@@ -49,18 +49,18 @@ const webhookController = {
 };
 
 // Function to handle intra transfer
+
 async function handleIntraTransfer(data) {
     const { amount, target_account_number, reference, narration } = data;
 
-    let wallet = await Wallet.findOne({ account_no: target_account_number });
+    // Check if the target account number belongs to an admin wallet
+    let wallet = await AdminWallet.findOne({ account_no: target_account_number });
     let isAdminWallet = false;
 
-    if (!wallet) {
-        wallet = await AdminWallet.findOne({ account_no: target_account_number });
-        if (!wallet) {
+    if (wallet) {
+        isAdminWallet = true; // Found an admin wallet
+    } else {
             throw new Error('Wallet not found');
-        }
-        isAdminWallet = true;
     }
 
     console.log('Updating wallet balance for:', isAdminWallet ? 'AdminWallet' : 'User Wallet');

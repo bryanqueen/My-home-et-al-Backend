@@ -1,6 +1,8 @@
 const AdminWallet = require('../models/AdminWallet');
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
+const Payment = require('../models/Payment');
+const Order = require('../models/Order')
 
 
 
@@ -86,20 +88,22 @@ const adminWalletController = {
         try {
             const adminId = req.admin._id;
 
-            const adminWallet = await AdminWallet.findOne({admin: adminId});
+            const adminWallet = await AdminWallet.findOne({admin: adminId}).select('-transactions');
 
             if(!adminWallet){
                 return res.status(404).json({error: 'Admin Wallet not found'})
             }
+            const userPayments = await Payment.find().populate('userId', 'firstname lastname' )
 
-            res.json(adminWallet)
+            res.json({adminWallet, userPayments})
         } catch (error) {
-            
+            return res.status(500).json({error: error.message})
         }
     },
-    getAdminWalletTransactions: async (req, res) => {
+    getTotalSales: async (req, res) => {
         try {
-
+            const orders = await Order.find({status: { $in: ['Ongoing', 'Delivered'] }});
+            res.json(orders)
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
