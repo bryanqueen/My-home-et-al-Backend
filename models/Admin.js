@@ -4,7 +4,7 @@ const {Schema, model} = mongoose;
 const adminSchema = new Schema({
     username: {
         type: String,
-        required: true
+        required: false
     },
     email: {
         type: String,

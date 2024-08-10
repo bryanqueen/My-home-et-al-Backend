@@ -324,7 +324,7 @@ const productController = {
    
     editProduct: async (req, res) => {
         try {
-            const { productId } = req.params; // Get the product ID from the request parameters
+            const productId = req.params.id; // Get the product ID from the request parameters
             const {
                 productTitle, 
                 price, 

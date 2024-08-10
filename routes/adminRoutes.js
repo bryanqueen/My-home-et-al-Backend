@@ -14,7 +14,7 @@ router.post('/create-admin', upload.single('admin-image'), authenticateAdmin, ad
 router.get('/get-admins', authenticateAdmin, adminController.getAllEmployeeAdmins);
 router.get('/:id', authenticateAdmin, adminController.getSingleAdminDetails);
 router.delete('/:id', authenticateAdmin, adminController.deleteEmployeeAdmin);
-router.put('/:id', authenticateAdmin, adminController.updateEmployeeAdminDetails);
+router.put('/:id', upload.single('admin-image'), authenticateAdmin, adminController.updateEmployeeAdminDetails);
 router.patch('/activate/:id', authenticateAdmin, adminController.activateEmployeeAdmin);
 router.patch('/deactivate/:id', authenticateAdmin, adminController.deactivateEmployeeAdmin);
 

@@ -11,7 +11,7 @@ router.post('/create-product', authenticateAdmin, upload.array('images', 10), pr
 router.post('/bulk-create', authenticateAdmin, productController.bulkCreateProduct);
 router.post('/bulk-publish', authenticateAdmin, productController.bulkPublishProduct);
 router.get('/all-products', authenticateAdmin, productController.fetchAllProducts)
-router.put('/:id', authenticateAdmin, productController.editProduct);
+router.put('/:id', upload.array('images', 10), authenticateAdmin, productController.editProduct);
 router.delete('/:id', authenticateAdmin, productController.deleteProduct);
 
 

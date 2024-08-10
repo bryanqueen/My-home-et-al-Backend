@@ -66,7 +66,7 @@ const adminController = {
                 emergency_contact_name: admin.emergency_contact_name,
                 emergency_contact_phone: admin.emergency_contact_phone,
                 emergency_contact_relationship: admin.emergency_contact_relationship,
-                username: admin.username,
+                // username: admin.username,
                 start_date: admin.start_date,
                 employment_type: admin.employment_type,
                 salary: admin.salary,
@@ -90,7 +90,7 @@ const adminController = {
                 emergency_contact_relationship,
                 emergency_contact_phone,
                 employee_id,
-                username,
+                // username,
                 password,
                 position,
                 start_date,
@@ -259,7 +259,6 @@ const adminController = {
         try {
             const {
                 fullname,
-                image,
                 password,
                 address,
                 phone_no,
@@ -267,7 +266,11 @@ const adminController = {
                 emergency_contact_name,
                 emergency_contact_relationship,
                 emergency_contact_phone,
-                username,
+                employee_id,
+                start_date,
+                employment_type,
+                salary,
+                // username,
                 position
             } = req.body;
 
@@ -279,9 +282,25 @@ const adminController = {
                 return res.status(404).json({error: 'Employee Admin not found'})
             }
 
+            let imageUrl = null;
+
+            //Check if a file was uploaded
+            if(req.file){
+                try {
+                    //Upload employee photo to Cloudinary
+                    const result = await cloudinary.uploader.upload(req.file.path, {
+                        folder: 'employee_photos'
+                    });
+                    imageUrl = result.secure_url;
+                } catch (uploadError) {
+                    console.error('Error uploading image to CLoudinary:', uploadError);
+                    return res.status(500).json({error: 'Error uploading to Cloudinary'})
+                }
+            }
+
             employeeAdmin.fullname = fullname;
-            employeeAdmin.username = username;
-            employeeAdmin.image = image;
+            // employeeAdmin.username = username;
+            employeeAdmin.image = imageUrl;
             employeeAdmin.address = address;
             employeeAdmin.phone_no = phone_no;
             employeeAdmin.gender = gender;
@@ -289,6 +308,12 @@ const adminController = {
             employeeAdmin.emergency_contact_relationship = emergency_contact_relationship;
             employeeAdmin.emergency_contact_phone = emergency_contact_phone;
             employeeAdmin.position = position;
+            employeeAdmin.start_date = start_date;
+            employeeAdmin.employee_id = employee_id;
+            employeeAdmin.employment_type = employment_type;
+            employeeAdmin.salary = salary;
+
+
             //Other Additional data can come in this format.
 
             //Update Password if Provided
@@ -300,7 +325,7 @@ const adminController = {
             employeeAdmin = await employeeAdmin.save();
             res.json({message: 'Employee Admin details updated successfully'})
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please try again'})
+            return res.status(500).json({error: error.message})
         }
     }
 };
