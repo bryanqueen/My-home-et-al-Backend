@@ -21,63 +21,77 @@ const paymentController = {
                 from_account_number,
                 points
             } = req.body;
-
-   
-
+    
+            // Find the user
             const user = await User.findById(userId);
-
-            if(points > 0){
-                if (user.points < points) {
-                    return res.status(400).json({error: 'Insufficient points'});
-                }
-                user.points -= points
-                await user.save();
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
             }
+    
+            // Fetch the admin wallet
             const fetchAdminWallet = await AdminWallet.find();
-            if(!fetchAdminWallet){
-                return res.status(404).json({error: 'No admin account was found'});
+            if (!fetchAdminWallet || fetchAdminWallet.length === 0) {
+                return res.status(404).json({ error: 'No admin account was found' });
             }
-            
-            const adminAccountNumber = fetchAdminWallet[0].account_no
+    
+            const adminAccountNumber = fetchAdminWallet[0].account_no; // Ensure this is the admin account
+            console.log('Admin Account Number:', adminAccountNumber); // Log for debugging
+    
             const createWalletRoute = process.env.CREATE_WALLET_API;
             const walletIntraTransferRoute = `${createWalletRoute}payments/intra`;
-            
-            // Find wallet
-            const wallet = await Wallet.findOne({user: userId});
-            if(!wallet){
-                return res.status(404).json({error: 'Wallet not found'});
+    
+            // Find the user's wallet
+            const wallet = await Wallet.findOne({ user: userId });
+            if (!wallet) {
+                return res.status(404).json({ error: 'Wallet not found' });
             }
-            
+    
             // Check if wallet has sufficient balance
-            if(wallet.balance < amount){
-                return res.status(400).json({error: 'Insufficient wallet balance'});
+            if (wallet.balance < amount) {
+                return res.status(400).json({ error: 'Insufficient wallet balance' });
             }
-            
-            // Pooler Intra Transfer API Call
+    
+            // Deduct points only if they are greater than 0
+            if (points > 0) {
+                if (user.points < points) {
+                    return res.status(400).json({ error: 'Insufficient points' });
+                }
+            }
+    
+            // Prepare payload for Pooler Intra Transfer API Call
             const payload = {
                 narration,
                 reference: orderId,
                 amount,
                 from_account_number,
-                to_account_number: adminAccountNumber,
+                to_account_number: adminAccountNumber, // Ensure this is set correctly
                 to_settlement: false
             };
     
+            console.log('Payload for Intra Transfer:', payload); // Log for debugging
+    
             const config = {
                 headers: {
-                    'Content-Type' : 'application/json',
-                    'Authorization' : `Bearer ${process.env.POOLER_APIKEY}`
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${process.env.POOLER_APIKEY}`
                 }
             };
     
+            // Call the Pooler Intra Transfer API
             const response = await axios.post(walletIntraTransferRoute, payload, config);
-            if(response.data.status !== '01'){
-                return res.status(400).json({error: response.data.message});
+            if (response.data.status !== '01') {
+                return res.status(400).json({ error: response.data.message });
             }
-            
+    
             // Deduct amount from wallet balance
             wallet.balance -= amount;
             await wallet.save();
+    
+            // Deduct points from the user only if payment was successful
+            if (points > 0) {
+                user.points -= points;
+                await user.save();
+            }
     
             // Record Payment in the database
             const payment = new Payment({
@@ -122,7 +136,7 @@ const paymentController = {
     
         } catch (error) {
             console.log(error);
-            return res.status(500).json({error: error.message});
+            return res.status(500).json({ error: error.message });
         }
     },
     UpdateOrderStatusWithSpay: async (req, res) => {

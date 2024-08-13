@@ -51,41 +51,38 @@ const webhookController = {
 // Function to handle intra transfer
 
 async function handleIntraTransfer(data) {
-    const { amount, target_account_number } = data;
+    const { amount, target_account_number, reference, narration } = data;
 
     // Check if the target account number belongs to an admin wallet
-    let wallet = await AdminWallet.findOne({ account_no: target_account_number });
-    let isAdminWallet = false;
+    const adminWallet = await AdminWallet.findOne({ account_no: target_account_number });
 
-    if (wallet) {
-        isAdminWallet = true; // Found an admin wallet
-    } else {
-            throw new Error('Wallet not found');
+    if (!adminWallet) {
+        throw new Error('Admin wallet not found');
     }
 
-    console.log('Updating wallet balance for:', isAdminWallet ? 'AdminWallet' : 'User Wallet');
-    console.log('Current balance:', wallet.balance);
+    console.log('Updating wallet balance for: AdminWallet');
+    console.log('Current balance:', adminWallet.balance);
     console.log('Amount to be added:', parseFloat(amount));
 
     // Update the wallet balance
-    wallet.balance += parseFloat(amount);
-    await wallet.save();
+    adminWallet.balance += parseFloat(amount);
+    await adminWallet.save();
 
-    console.log('Updated balance:', wallet.balance);
+    console.log('Updated balance:', adminWallet.balance);
 
-    // Create a new transaction
+    // Create a new transaction (optional, uncomment if needed)
     // const transaction = new Transaction({
-    //     wallet: wallet._id,
+    //     wallet: adminWallet._id,
     //     amount: parseFloat(amount),
-    //     type: 'Purchase',
+    //     type: 'Intra Transfer',
     //     reference,
     //     narration
     // });
     // await transaction.save();
 
-    // // Add the transaction to the wallet's transactions array
-    // wallet.transactions.push(transaction._id);
-    // await wallet.save();
+    // // Add the transaction to the wallet's transactions array (optional, uncomment if needed)
+    // adminWallet.transactions.push(transaction._id);
+    // await adminWallet.save();
 
     // console.log('Transaction saved:', transaction);
 }
