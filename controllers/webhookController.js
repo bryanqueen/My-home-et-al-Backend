@@ -51,7 +51,16 @@ const webhookController = {
 // Function to handle intra transfer
 
 async function handleIntraTransfer(data) {
-    const { amount, receiver_details, reference, narration } = data;
+    // Log the incoming data for debugging
+    console.log('Incoming data for handleIntraTransfer:', data);
+
+    const { amount } = data;
+    const receiver_details = data.receiver_details; // Extract receiver_details
+
+    // Check if receiver_details is defined
+    if (!receiver_details || !receiver_details.account_number) {
+        throw new Error('Receiver details or account number is missing');
+    }
 
     // Check if the target account number belongs to an admin wallet
     const adminWallet = await AdminWallet.findOne({ account_no: receiver_details.account_number });
