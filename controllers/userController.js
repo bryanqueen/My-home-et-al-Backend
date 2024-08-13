@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken');
 const Order = require('../models/Order');
 const crypto = require('crypto');
 const sendVerificationEmail = require('../utils/sendVerificationEmail');
-const sendPasswordResetEmail = require('../utils/sendResetEmail')
+const sendPasswordResetEmail = require('../utils/sendResetEmail');
+const mongoose = require('mongoose')
 
 
 
@@ -377,22 +378,28 @@ const userController = {
     removeItemFromCart: async (req, res) => {
         try {
             const userId = req.user._id;
-            const {productId} = req.body
-
-            //Find user
+            const { productId } = req.body;
+    
+            // Find user
             const user = await User.findById(userId);
-            if(!user){
-                return res.status(404).json({error: 'User not found'})
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
             }
-
-            //Remove product from saved items
-            user.cart = user.cart.filter(item => item.toString() !== productId);
-
+    
+            // Check if productId is a valid ObjectId
+            if (!mongoose.Types.ObjectId.isValid(productId)) {
+                return res.status(400).json({ error: 'Invalid product ID' });
+            }
+    
+            // Remove product from cart
+            user.cart = user.cart.filter(item => item.product.toString() !== productId);
+    
+            // Save the updated user document
             await user.save();
-
-            res.status(200).json({message: 'Product removed from cart', cart: user.cart})
+    
+            res.status(200).json({ message: 'Product removed from cart', cart: user.cart });
         } catch (error) {
-            return res.status(500).json({error: error.message})
+            return res.status(500).json({ error: error.message });
         }
     },
     getItemsInCart: async (req, res) => {

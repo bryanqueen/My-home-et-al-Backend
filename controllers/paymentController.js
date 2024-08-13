@@ -130,6 +130,10 @@ const paymentController = {
                     );
                 }
             }
+
+                    // Clear the user's cart after successful payment
+                    user.cart = []; // Empty the cart
+                    await user.save(); // Save the user document
     
             await userController.handlePurchaseAndReferralReward(userId);
             res.json({ message: 'Payment successful', payment });
@@ -169,6 +173,12 @@ const paymentController = {
                     { $inc: { quantity: -item.qty } }
                 );
             }
+
+                    // Clear the user's cart after successful payment
+                    user.cart = []; // Empty the cart
+                    await user.save(); // Save the user document
+
+            await userController.handlePurchaseAndReferralReward(userId);
             res.json({message: 'Payment Confirmed as successful', order})
         } catch (error) {
             return res.status(500).json({error: error.message})
