@@ -38,7 +38,7 @@ const paymentController = {
                 return res.status(404).json({error: 'No admin account was found'});
             }
             
-            const adminAccountNumber = fetchAdminWallet[0].account_no;
+            const adminAccountNumber = parseInt(fetchAdminWallet[0].account_no)
             const createWalletRoute = process.env.CREATE_WALLET_API;
             const walletIntraTransferRoute = `${createWalletRoute}payments/intra`;
             
