@@ -51,10 +51,10 @@ const webhookController = {
 // Function to handle intra transfer
 
 async function handleIntraTransfer(data) {
-    const { amount, target_account_number, reference, narration } = data;
+    const { amount, receiver_details, reference, narration } = data;
 
     // Check if the target account number belongs to an admin wallet
-    const adminWallet = await AdminWallet.findOne({ account_no: target_account_number });
+    const adminWallet = await AdminWallet.findOne({ account_no: receiver_details.account_number });
 
     if (!adminWallet) {
         throw new Error('Admin wallet not found');
