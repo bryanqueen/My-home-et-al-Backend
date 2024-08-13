@@ -55,10 +55,10 @@ async function handleIntraTransfer(data) {
     console.log('Incoming data for handleIntraTransfer:', data);
 
     const { amount } = data;
-    const receiver_details = data.receiver_details; // Extract receiver_details
+    const reciever_details = data.reciever_details; // Extract receiver_details
 
     // Check if receiver_details is defined
-    if (!receiver_details || !receiver_details.account_number) {
+    if (!reciever_details || !reciever_details.account_number) {
         throw new Error('Receiver details or account number is missing');
     }
 
