@@ -55,15 +55,16 @@ async function handleIntraTransfer(data) {
     console.log('Incoming data for handleIntraTransfer:', data);
 
     const { amount } = data;
-    const reciever_details = data.reciever_details; // Extract receiver_details
+    const {account_number} = data.gateway.reciever_details; // Extract receiver_details
 
     // Check if receiver_details is defined
-    if (!reciever_details || !reciever_details.account_number) {
+    if (!account_number) {
         throw new Error('Receiver details or account number is missing');
     }
 
     // Check if the target account number belongs to an admin wallet
-    const adminWallet = await AdminWallet.findOne({ account_no: reciever_details.account_number });
+    const adminWallet = await AdminWallet.findOne({ account_no: account_number });
+    console.log(adminWallet)
 
     if (!adminWallet) {
         throw new Error('Admin wallet not found');
