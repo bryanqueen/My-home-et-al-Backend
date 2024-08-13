@@ -63,7 +63,7 @@ async function handleIntraTransfer(data) {
     }
 
     // Check if the target account number belongs to an admin wallet
-    const adminWallet = await AdminWallet.findOne({ account_no: receiver_details.account_number });
+    const adminWallet = await AdminWallet.findOne({ account_no: reciever_details.account_number });
 
     if (!adminWallet) {
         throw new Error('Admin wallet not found');
