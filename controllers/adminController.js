@@ -144,7 +144,7 @@ const adminController = {
                 emergency_contact_relationship,
                 emergency_contact_phone,
                 employee_id,
-                username,
+                // username,
                 position,
                 start_date,
                 employment_type,
