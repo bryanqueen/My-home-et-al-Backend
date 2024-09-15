@@ -346,6 +346,18 @@ const productController = {
             if (!product) {
                 return res.status(404).json({ error: 'Product not found' });
             }
+
+        // Delete images from Cloudinary if any are marked for removal
+            if (imagesToDelete && imagesToDelete.length > 0) {
+                const deletePromises = imagesToDelete.map(imageUrl => {
+                    const publicId = imageUrl.split('/').pop().split('.')[0]; // Extract public ID from URL
+                    return cloudinary.uploader.destroy(`product_images/${publicId}`);
+                });
+                await Promise.all(deletePromises);
+
+                // Filter out the deleted images from the product's existing images
+                product.images = product.images.filter(image => !imagesToDelete.includes(image));
+            }
     
             // Update the inventory if it exists
             if (inventory !== undefined) {
