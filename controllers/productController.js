@@ -338,7 +338,8 @@ const productController = {
                 color,
                 keyFeatures,
                 size,
-                sku
+                sku,
+                imagesToDelete
             } = req.body;
     
             // Find the existing product by ID
