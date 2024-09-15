@@ -229,7 +229,7 @@ const productController = {
             // console.log('Number of products in category:', productCategory.products.length);
     
             // Fetch all products in the category
-            const products = await Product.find({_id: {$in: productCategory.products}}).populate('category', 'name');
+            const products = await Product.find({_id: {$in: productCategory.products}}).populate('category', 'name').populate('review', 'rating')
     
             console.log('Number of products fetched:', products.length);
     

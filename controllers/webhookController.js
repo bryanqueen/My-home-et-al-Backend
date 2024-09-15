@@ -54,47 +54,6 @@ async function handleIntraTransfer(data) {
     // Log the incoming data for debugging
     console.log('Incoming data for handleIntraTransfer:', data);
 
-    const { amount } = data;
-    const {account_number} = data.gateway.reciever_details; // Extract receiver_details
-
-    // Check if receiver_details is defined
-    if (!account_number) {
-        throw new Error('Receiver details or account number is missing');
-    }
-
-    // Check if the target account number belongs to an admin wallet
-    const adminWallet = await AdminWallet.findOne({ account_no: account_number });
-    console.log(adminWallet)
-
-    if (!adminWallet) {
-        throw new Error('Admin wallet not found');
-    }
-
-    console.log('Updating wallet balance for: AdminWallet');
-    console.log('Current balance:', adminWallet.balance);
-    console.log('Amount to be added:', parseFloat(amount));
-
-    // Update the wallet balance
-    adminWallet.balance += parseFloat(amount);
-    await adminWallet.save();
-
-    console.log('Updated balance:', adminWallet.balance);
-
-    // Create a new transaction (optional, uncomment if needed)
-    // const transaction = new Transaction({
-    //     wallet: adminWallet._id,
-    //     amount: parseFloat(amount),
-    //     type: 'Intra Transfer',
-    //     reference,
-    //     narration
-    // });
-    // await transaction.save();
-
-    // // Add the transaction to the wallet's transactions array (optional, uncomment if needed)
-    // adminWallet.transactions.push(transaction._id);
-    // await adminWallet.save();
-
-    // console.log('Transaction saved:', transaction);
 }
 
 // Function to handle fund wallet
@@ -102,25 +61,7 @@ async function handleFundWallet(data) {
     const { amount, target_account_number, reference, narration } = data;
 
     let wallet = await Wallet.findOne({ account_no: target_account_number });
-    let isAdminWallet = false;
 
-    if (!wallet) {
-        wallet = await AdminWallet.findOne({ account_no: target_account_number });
-        if (!wallet) {
-            throw new Error('Wallet not found');
-        }
-        isAdminWallet = true;
-    }
-
-    console.log('Updating wallet balance for:', isAdminWallet ? 'AdminWallet' : 'User Wallet');
-    console.log('Current balance:', wallet.balance);
-    console.log('Amount to be added:', parseFloat(amount));
-
-    // Update the wallet balance
-    wallet.balance += parseFloat(amount);
-    await wallet.save();
-
-    console.log('Updated balance:', wallet.balance);
 
     // Create a new transaction
     const transaction = new Transaction({

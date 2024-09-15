@@ -5,7 +5,7 @@ const paymentController = require('../controllers/paymentController');
 
 //Private Route
 router.post('/wallet', authenticateUser, paymentController.makeWalletPayment );
-router.put('/spay', authenticateUser, paymentController.UpdateOrderStatusWithSpay);
-// router.post('/rexpay/initiate', authenticateUser, paymentController.initiateRexpayPayment);
+router.put('/spay', authenticateUser, paymentController.UpdateOrderStatusWithSpayorRexpay);
+router.post('/rexpay/initiate', paymentController.initiateRexpayPayment);
 
 module.exports = router

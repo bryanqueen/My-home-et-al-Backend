@@ -8,7 +8,7 @@ const { createPayment } = require('../config/rexPay');
 const userController = require('./userController');
 const Inventory = require('../models/Inventory');
 const User = require('../models/User');
-const mongoose = require('mongoose')
+
 
 const paymentController = {
     makeWalletPayment: async (req, res) => {
@@ -35,7 +35,6 @@ const paymentController = {
             }
     
             const adminAccountNumber = fetchAdminWallet[0].account_no; // Ensure this is the admin account
-            console.log('Admin Account Number:', adminAccountNumber); // Log for debugging
     
             const createWalletRoute = process.env.CREATE_WALLET_API;
             const walletIntraTransferRoute = `${createWalletRoute}payments/intra`;
@@ -45,9 +44,22 @@ const paymentController = {
             if (!wallet) {
                 return res.status(404).json({ error: 'Wallet not found' });
             }
-    
+
+            const {account_no} = wallet;
+
+            const GETWALLETROUTE = 'https://api.poolerapp.com/v1/wallets/'
+
+            const getWalletBalance = await axios.get(`${GETWALLETROUTE}${account_no}`, {
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization' : `Bearer ${process.env.POOLER_APIKEY}`
+                }
+            });
+
+            const walletBalance = getWalletBalance.data.balance.balance;
+
             // Check if wallet has sufficient balance
-            if (wallet.balance < amount) {
+            if (walletBalance < amount) {
                 return res.status(400).json({ error: 'Insufficient wallet balance' });
             }
     
@@ -143,7 +155,7 @@ const paymentController = {
             return res.status(500).json({ error: error.message });
         }
     },
-    UpdateOrderStatusWithSpay: async (req, res) => {
+    UpdateOrderStatusWithSpayorRexpay: async (req, res) => {
         try {
             const userId = req.user._id;
             const {orderId, points} = req.body;
@@ -186,13 +198,14 @@ const paymentController = {
     },
     initiateRexpayPayment: async(req, res) => {
         try {
+            const {orderId, amount, email, } = req.body;
             const paymentDetails = {
-              reference: req.body.reference,
-              amount: req.body.amount,
-              currency: req.body.currency,
-              userId: req.body.userId,
-              callbackUrl: req.body.callbackUrl,
-              metadata: req.body.metadata
+              reference: orderId,
+              amount,
+              currency: 'NGN',
+              userId: email,
+              callbackUrl: `https://www.myhomeetal.com/order-confirmed?id=${orderId}-${amount}`,
+            //   metadata: req.body.metadata
             };
         
             const result = await createPayment(paymentDetails);

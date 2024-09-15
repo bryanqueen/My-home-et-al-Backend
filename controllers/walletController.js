@@ -2,6 +2,7 @@ const Wallet = require('../models/Wallet');
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken')
 
 
 
@@ -88,24 +89,46 @@ const walletController = {
     },
     getWallet: async (req, res) => {
         try {
-            const userId = req.user._id;
-    
-            // Check if req.user is defined
-            if (!req.user) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-    
-            const wallet = await Wallet.findOne({user: userId});
-            if (!wallet) {
-                return res.status(404).json({ error: 'Wallet not found' });
-            }
-    
-            res.json(wallet);  // Return the wallet information
+          const authHeader = req.headers['authorization'];
+          if (!authHeader) {
+            return res.status(401).json({ error: 'Authorization Header is Missing' });
+          }
+          const token = authHeader.split(' ')[1];
+          const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+          const userId = decodedToken.id;
+          console.log('Decoded token userId:', userId);
+      
+          const wallet = await Wallet.findOne({ user: userId });
+          if (!wallet) {
+            console.error(`Wallet not found for user ID: ${userId}`);
+            return res.status(404).json({ error: 'Wallet not found' });
+          }
+      
+          const { account_no } = wallet;
+          const GETWALLETROUTE = 'https://api.poolerapp.com/v1/wallet/';
+          console.log('GETWALLETROUTE:', GETWALLETROUTE);
+          console.log('account_no:', account_no);
+      
+          const getWalletBalance = await axios.get(`${GETWALLETROUTE}${account_no}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${process.env.POOLER_APIKEY}`,
+            },
+          });
+          console.log('getWalletBalance response:', getWalletBalance.data);
+      
+          if (!getWalletBalance.data || !getWalletBalance.data.balance || !getWalletBalance.data.balance.balance) {
+            console.error('Invalid response from POOLER_APIKEY endpoint');
+            return res.status(500).json({ error: 'Error retrieving wallet balance' });
+          }
+      
+          const walletBalance = getWalletBalance.data.balance.balance;
+          res.json({ wallet_details: wallet, wallet_balance: walletBalance });
         } catch (error) {
-            return res.status(500).json({ error: error.message });
+          console.error('Error in getWallet:', error);
+          return res.status(500).json({ error: error.message });
         }
-    }
-    ,
+      },
     getWalletTransactions: async (req, res) => {
         try {
             const userId = req.user._id;
