@@ -2,6 +2,7 @@ const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
 const mongoose = require('mongoose');
+const port = process.env.PORT || 4000
 const walletRoutes = require('./routes/walletRoutes');
 const adminWalletRoutes = require('./routes/adminWalletRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -14,16 +15,19 @@ const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const addressRoutes = require('./routes/addressRoutes');
 
-const path = '/api/v1';
 
-// Initialize App
+
+const path = '/api/v1'
+
+
+//Initialize App
 const app = express();
 
-// Middlewares
+//Middlewares
 app.use(express.json());
 app.use(cors());
 
-// Connect DB
+//Connect DB
 async function connectDB() {
     try {
         console.log('Attempting to connect to MongoDB...');
@@ -32,15 +36,17 @@ async function connectDB() {
         console.log(`Mongoose Connection established @${connection.connection.host}`);
     } catch (error) {
         console.error('MongoDB connection error:', error);
-        throw error; // Propagate the error
+        process.exit(1);
     }
 }
 
-app.get('/', (req, res) => {
-    res.send(`<h1>Welcome to MyHomeetal API</h1>`);
+app.get('/',(req, res) => {
+    res.send(`<h1>Welcome to MyHomeetal API</h1>`)
 });
 
-// Routes Middlewares
+
+
+//Routes Middlewares
 app.use(`${path}/wallet`, walletRoutes);
 app.use(`${path}/admin`, adminRoutes);
 app.use(`${path}/user`, userRoutes);
@@ -51,30 +57,27 @@ app.use(`${path}/admin-wallet`, adminWalletRoutes);
 app.use(`${path}/order`, orderRoutes);
 app.use(`${path}/payment`, paymentRoutes);
 app.use(`${path}/address`, addressRoutes);
+//Webhook Route middleware
 app.use(`${path}/webhook`, webhookRoutes);
-
 app.use((err, req, res, next) => {
     console.error('Global error handler:', err);
     res.status(500).json({ error: err.message });
-});
-
+  });
 app.use('*', (req, res) => {
     console.log('Reached unknown route');
     res.status(404).json({ error: 'Route not found' });
-});
-
-app.use((req, res, next) => {
+ });
+ app.use((req, res, next) => {
     console.log(`Request received: ${req.method} ${req.url}`);
     next();
-});
+  });
 
-// Connect to the database before exporting the app
-connectDB().then(() => {
-    console.log('Database connected successfully');
-}).catch(err => {
-    console.error('Failed to connect to the database', err);
-    process.exit(1);
-});
 
-// Export the Express app
-module.exports = app;
+
+//Database Connection must be established before listening to port
+connectDB()
+.then(() => {
+    app.listen(port, () => {
+        console.log(`This Server is running locally on port ${port}`);
+    })
+})
