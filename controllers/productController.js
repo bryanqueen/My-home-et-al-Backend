@@ -450,6 +450,23 @@ const productController = {
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
+    },
+    bulkDeleteProducts: async (req, res) => {
+        try {
+            const { productIds } = req.body;  // Array of product IDs to delete
+    
+            if (!Array.isArray(productIds) || productIds.length === 0) {
+                return res.status(400).json({ error: 'No product IDs provided' });
+            }
+    
+            // Use deleteMany to remove multiple products
+            await Product.deleteMany({ _id: { $in: productIds } });
+    
+            res.status(200).json({ message: 'Selected products deleted successfully' });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
     }
+    
 }
 module.exports = productController;

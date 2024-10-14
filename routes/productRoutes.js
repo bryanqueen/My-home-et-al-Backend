@@ -13,6 +13,7 @@ router.post('/bulk-publish', authenticateAdmin, productController.bulkPublishPro
 router.get('/all-products', authenticateAdmin, productController.fetchAllProducts)
 router.put('/:id', upload.array('images', 10), authenticateAdmin, productController.editProduct);
 router.delete('/:id', authenticateAdmin, productController.deleteProduct);
+router.delete('/bulk-delete', authenticateAdmin, productController.bulkDeleteProducts);
 
 
 //Public Routes
