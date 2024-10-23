@@ -5,7 +5,8 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const multer = require('multer');
 const uploadCsv = multer({dest:'uploads/csv'});
-const cloudinary = require('../config/cloudinary')
+const cloudinary = require('../config/cloudinary');
+const redisClient =  require('../config/redisClient');
 
 
 const productController = {
@@ -246,10 +247,18 @@ const productController = {
         }
     },
     fetchAllProducts: async (req, res) => {
+        const cacheKey = 'allProducts';
         try {
-            const totalProducts = await Product.find().populate('category', 'name').populate('inventory', 'quantity' )
-            
-            res.json(totalProducts)
+            const cachedProducts = await redisClient.get(cacheKey);
+            if(cachedProducts){
+                // Return the cached products
+                return res.json(JSON.parse(cachedProducts))
+            }
+
+            //Fetch from DB if not in cache
+            const totalProducts = await Product.find().populate('category', 'name').populate('inventory', 'quantity' );
+            await redisClient.setEx(cacheKey, 3600, JSON.stringify(totalProducts)); //Cache for 1hour
+            return res.json(totalProducts)
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
         }
@@ -258,18 +267,25 @@ const productController = {
         try {
             const productId = req.params.id;
 
-            const product = await Product.findById(productId).populate('category', 'name').populate('review', 'rating comment date').populate('inventory', 'quantity')
+            // Checking if the product exists in Redis cache
+            redisClient.get(`product:${productId}`, async (err, cachedProduct) => {
+                if (err) throw err;
 
-            if (!product) {
-                return res.status(404).json({message: 'Product not found'})
-            }
-            // Convert the product to a plain JavaScript object
-            // const productObject = product.toObject();
+                if (cachedProduct){
+                    //If product found in cache, return it
+                    return res.json(JSON.parse(cachedProduct));
+                }
+                const product = await Product.findById(productId).populate('category', 'name').populate('review', 'rating comment date').populate('inventory', 'quantity')
+    
+                if (!product) {
+                    return res.status(404).json({message: 'Product not found'})
+                }
 
-            // Add the category name to the response
-            // productObject.categoryName = product.category ? product.category.name : null;
-
-            res.json(product);
+                //Store Fetched product in Redis cache (with an expiration time of 2 hours)
+                redisClient.setEx(`product:${productId}`, 3600, JSON.stringify(product));
+    
+                res.json(product);
+            });
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
