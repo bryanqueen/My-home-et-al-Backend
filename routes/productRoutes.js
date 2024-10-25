@@ -19,7 +19,7 @@ router.delete('/bulk-delete', authenticateAdmin, productController.bulkDeletePro
 //Public Routes
 router.get('/category/:id', productController.viewProductsByCategory);
 router.get('/:id', productController.getSingleProductDetails);
-router.post('/search', productController.searchForProduct)
+router.post('/index-products', productController.indexAllProducts)
 
 
 //Test Route

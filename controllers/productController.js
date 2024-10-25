@@ -5,7 +5,12 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const multer = require('multer');
 const uploadCsv = multer({dest:'uploads/csv'});
-const cloudinary = require('../config/cloudinary')
+const cloudinary = require('../config/cloudinary');
+const {algoliasearch} = require('algoliasearch');
+
+
+const client = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_API_KEY);
+
 
 
 const productController = {
@@ -69,6 +74,19 @@ const productController = {
             });
 
             await product.save();
+
+            await client.saveObject({
+                indexName: 'products',
+                body: {
+                    objectID: product._id.toString(),
+                    productTitle: product.productTitle,
+                    category: product.category,
+                    description: product.description,
+                    brand: product.brand,
+                    mainMaterial: product.mainMaterial,
+                    color: product.color
+                }
+            })
 
             // Check if product category exists in the database
             const productCategory = await ProductCategory.findById(category).populate('products');
@@ -192,6 +210,19 @@ const productController = {
                 // console.log('Product to be saved:', product);
     
                 const savedProduct = await product.save();
+
+                await client.saveObject({
+                    indexName: 'products',
+                    body: {
+                        objectID: savedProduct._id.toString(),
+                        productTitle: savedProduct.productTitle,
+                        category: savedProduct.category,
+                        description: savedProduct.description,
+                        brand: savedProduct.brand,
+                        mainMaterial: savedProduct.mainMaterial,
+                        color: savedProduct.color
+                    }
+                })
                 publishedProductsIds.push(savedProduct._id);
     
                 if (category) {
@@ -274,35 +305,35 @@ const productController = {
             return res.status(500).json({error: error.message})
         }
     },
-    searchForProduct: async (req, res) => {
-        //These function will be used for searching products
-        try {
-            const { query } = req.query; // Get the search query from the request
+    // searchForProduct: async (req, res) => {
+    //     //These function will be used for searching products
+    //     try {
+    //         const { query } = req.query; // Get the search query from the request
 
-            if (!query) {
-                return res.status(400).json({ error: 'Search query is required' });
-            }
+    //         if (!query) {
+    //             return res.status(400).json({ error: 'Search query is required' });
+    //         }
     
-            // Create a regex pattern for case-insensitive search
-            const searchPattern = new RegExp(query, 'i');
+    //         // Create a regex pattern for case-insensitive search
+    //         const searchPattern = new RegExp(query, 'i');
     
-            // Search for products matching the query in title, description, or brand
-            const products = await Product.find({
-                $or: [
-                    { productTitle: searchPattern },
-                    { brand: searchPattern }
-                ]
-            }).populate('category'); // Populate the category field if needed
+    //         // Search for products matching the query in title, description, or brand
+    //         const products = await Product.find({
+    //             $or: [
+    //                 { productTitle: searchPattern },
+    //                 { brand: searchPattern }
+    //             ]
+    //         }).populate('category'); // Populate the category field if needed
     
-            if (products.length === 0) {
-                return res.status(404).json({ message: 'No products found matching the search query' });
-            }
+    //         if (products.length === 0) {
+    //             return res.status(404).json({ message: 'No products found matching the search query' });
+    //         }
     
-            res.json(products);
-        } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
-        }
-    },
+    //         res.json(products);
+    //     } catch (error) {
+    //         return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+    //     }
+    // },
     fetchNewProducts: async (req, res) => {
         //These are products added to the database within the timeframe of 48hrs, after 48hrs, the product can no longer be tagged a new product
             try {
@@ -404,6 +435,20 @@ const productController = {
     
             // Save the updated product
             await product.save();
+
+            //Update Algolia's Product index
+            await client.partialUpdateObject({
+                indexName: 'products',
+                objectID: product._id.toString(),
+                attributesToUpdate: {
+                    productTitle: product.productTitle,
+                    category: product.category,
+                    description: product.description,
+                    brand: product.brand,
+                    mainMaterial: product.mainMaterial,
+                    color: product.color
+                }
+            })
     
             // Check if the product category has changed
             if (category && category !== product.category.toString()) {
@@ -446,6 +491,12 @@ const productController = {
             //Delete the product itself
             await Product.findByIdAndDelete(productId);
 
+            //Delete index from Algolia
+            await client.deleteObject({
+                indexName: 'products',
+                objectID: productId
+            })
+
             res.json({message: 'Product deleted successfully'})
         } catch (error) {
             return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
@@ -466,7 +517,31 @@ const productController = {
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }
+    },
+
+    //Index existing Product in Algolia -- Will be called Once during Development
+    indexAllProducts: async(req, res) => {
+        try {
+            const products = await Product.find();
+            const objects = products.map(product => ({
+                objectID: product._id.toString(),
+                productTitle: product.productTitle,
+                category: product.category,
+                description: product.description,
+                brand: product.brand,
+                mainMaterial: product.mainMaterial,
+                color: product.color
+            }));
+
+            await client.saveObjects({
+                indexName: 'products',
+                objects: objects
+            });
+
+            res.status(200).json({message: 'All Products have been Successfully Indexed in Algolia'})
+        } catch (error) {
+            return res.status(500).json({error: error.message})
+        }
     }
-    
 }
 module.exports = productController;
