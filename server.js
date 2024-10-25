@@ -77,7 +77,7 @@ app.use('*', (req, res) => {
 //Database Connection must be established before listening to port
 connectDB()
 .then(() => {
-    app.listen(port, () => {
+    app.listen(port, '0.0.0.0', () => {
         console.log(`This Server is running locally on port ${port}`);
     })
 })
