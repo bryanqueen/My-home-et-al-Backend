@@ -11,15 +11,15 @@ router.post('/create-product', authenticateAdmin, upload.array('images', 10), pr
 router.post('/bulk-create', authenticateAdmin, productController.bulkCreateProduct);
 router.post('/bulk-publish', authenticateAdmin, productController.bulkPublishProduct);
 router.get('/all-products', authenticateAdmin, productController.fetchAllProducts)
+router.delete('/bulk-delete', authenticateAdmin, productController.bulkDeleteProducts);
 router.put('/:id', upload.array('images', 10), authenticateAdmin, productController.editProduct);
 router.delete('/:id', authenticateAdmin, productController.deleteProduct);
-router.delete('/bulk-delete', authenticateAdmin, productController.bulkDeleteProducts);
 
 
 //Public Routes
 router.get('/category/:id', productController.viewProductsByCategory);
 router.get('/:id', productController.getSingleProductDetails);
-router.post('/index-products', productController.indexAllProducts)
+router.post('/index-products', productController.indexAllProducts);
 
 
 //Test Route

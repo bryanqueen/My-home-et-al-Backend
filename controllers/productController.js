@@ -499,7 +499,7 @@ const productController = {
 
             res.json({message: 'Product deleted successfully'})
         } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            return res.status(500).json({error: error.message})
         }
     },
     bulkDeleteProducts: async (req, res) => {
@@ -515,6 +515,7 @@ const productController = {
     
             res.status(200).json({ message: 'Selected products deleted successfully' });
         } catch (error) {
+            console.error(error)
             return res.status(500).json({ error: error.message });
         }
     },
