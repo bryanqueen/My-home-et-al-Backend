@@ -96,7 +96,7 @@ const walletController = {
       
           if (!getWallet.data) {
             console.error('Invalid response from POOLER_APIKEY endpoint');
-            return res.status(500).json({ error: 'Error retrieving wallet balance' });
+            return res.status(500).json({ error: 'Error retrieving wallet details' });
           }
       
           const walletDeets = getWallet.data.data

@@ -12,10 +12,9 @@ const adminWalletSchema = new Schema({
         required: true
     },
 
-
     transactions: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Transaction'
+        ref: 'AdminTransaction'
     }]
 });
 module.exports = AdminWallet = model('AdminWallet', adminWalletSchema);

@@ -8,6 +8,7 @@ const { createPayment } = require('../config/rexPay');
 const userController = require('./userController');
 const Inventory = require('../models/Inventory');
 const User = require('../models/User');
+const AdminTransaction = require('../models/AdminTransaction');
 
 
 const paymentController = {
@@ -47,7 +48,7 @@ const paymentController = {
 
             const {account_no} = wallet;
 
-            const GETWALLETROUTE = 'https://api.poolerapp.com/v1/wallets/'
+            const GETWALLETROUTE = 'https://api.poolerapp.com/v1/wallet/'
 
             const getWalletBalance = await axios.get(`${GETWALLETROUTE}${account_no}`, {
                 headers: {
@@ -127,6 +128,18 @@ const paymentController = {
             // Add the transaction to the wallet's transactions array
             wallet.transactions.push(transaction._id);
             await wallet.save();
+
+            //Record this payment to the Admin's wallet Transaction
+            const adminTransaction = new AdminTransaction({
+                amount: parseFloat(amount),
+                type: 'Wallet payment',
+                actor: `${user.firstname}{''}${user.lastname}`
+            });
+            await adminTransaction.save();
+            const fetchedAdminWallet = fetchAdminWallet[0];
+            fetchedAdminWallet.transactions.push(adminTransaction._id);
+            await fetchedAdminWallet.save()
+            
     
             // Update the order status to Ongoing
             const order = await Order.findOne({ orderId: orderId });
