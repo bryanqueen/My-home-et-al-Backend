@@ -12,6 +12,25 @@ const {algoliasearch} = require('algoliasearch');
 const client = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_API_KEY);
 
 
+// Helper function to create Algolia record
+const indexAlgoliaRecord = async (product) => {
+    // Ensure category is populated
+    const populatedProduct = await Product.findById(product._id).populate('category');
+    const categoryName = populatedProduct.category?.name || '';
+
+    return {
+        objectID: populatedProduct._id.toString(),
+        productTitle: populatedProduct.productTitle,
+        category: {
+            name: categoryName
+        },
+        brand: populatedProduct.brand,
+        mainMaterial: populatedProduct.mainMaterial,
+        color: populatedProduct.color,
+        searchData: `${populatedProduct.productTitle} ${populatedProduct.brand} ${categoryName} ${populatedProduct.mainMaterial} ${populatedProduct.color}`.toLowerCase()
+    };
+};
+
 
 const productController = {
     createSingleProduct: async (req, res) => {
@@ -75,17 +94,11 @@ const productController = {
 
             await product.save();
 
+            const algoliaRecord = await indexAlgoliaRecord(product);
+
             await client.saveObject({
                 indexName: 'products',
-                body: {
-                    objectID: product._id.toString(),
-                    productTitle: product.productTitle,
-                    category: product.category,
-                    description: product.description,
-                    brand: product.brand,
-                    mainMaterial: product.mainMaterial,
-                    color: product.color
-                }
+                body: algoliaRecord
             })
 
             // Check if product category exists in the database
@@ -210,18 +223,10 @@ const productController = {
                 // console.log('Product to be saved:', product);
     
                 const savedProduct = await product.save();
-
+                const algoliaRecord = await indexAlgoliaRecord(savedProduct);
                 await client.saveObject({
                     indexName: 'products',
-                    body: {
-                        objectID: savedProduct._id.toString(),
-                        productTitle: savedProduct.productTitle,
-                        category: savedProduct.category,
-                        description: savedProduct.description,
-                        brand: savedProduct.brand,
-                        mainMaterial: savedProduct.mainMaterial,
-                        color: savedProduct.color
-                    }
+                    body: algoliaRecord
                 })
                 publishedProductsIds.push(savedProduct._id);
     
@@ -305,35 +310,35 @@ const productController = {
             return res.status(500).json({error: error.message})
         }
     },
-    // searchForProduct: async (req, res) => {
-    //     //These function will be used for searching products
-    //     try {
-    //         const { query } = req.query; // Get the search query from the request
+    searchForProduct: async (req, res) => {
+        //These function will be used for searching products
+        try {
+            const { query } = req.query; // Get the search query from the request
 
-    //         if (!query) {
-    //             return res.status(400).json({ error: 'Search query is required' });
-    //         }
+            if (!query) {
+                return res.status(400).json({ error: 'Search query is required' });
+            }
     
-    //         // Create a regex pattern for case-insensitive search
-    //         const searchPattern = new RegExp(query, 'i');
+            // Create a regex pattern for case-insensitive search
+            const searchPattern = new RegExp(query, 'i');
     
-    //         // Search for products matching the query in title, description, or brand
-    //         const products = await Product.find({
-    //             $or: [
-    //                 { productTitle: searchPattern },
-    //                 { brand: searchPattern }
-    //             ]
-    //         }).populate('category'); // Populate the category field if needed
+            // Search for products matching the query in title, description, or brand
+            const products = await Product.find({
+                $or: [
+                    { productTitle: searchPattern },
+                    { brand: searchPattern }
+                ]
+            }).populate('category'); // Populate the category field if needed
     
-    //         if (products.length === 0) {
-    //             return res.status(404).json({ message: 'No products found matching the search query' });
-    //         }
+            if (products.length === 0) {
+                return res.status(404).json({ message: 'No products found matching the search query' });
+            }
     
-    //         res.json(products);
-    //     } catch (error) {
-    //         return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
-    //     }
-    // },
+            res.json(products);
+        } catch (error) {
+            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+        }
+    },
     fetchNewProducts: async (req, res) => {
         //These are products added to the database within the timeframe of 48hrs, after 48hrs, the product can no longer be tagged a new product
             try {
@@ -436,19 +441,25 @@ const productController = {
             // Save the updated product
             await product.save();
 
-            //Update Algolia's Product index
+            // Populate the category for Algolia update
+            const populatedProduct = await Product.findById(product._id).populate('category');
+            const categoryName = populatedProduct.category?.name || '';
+
+            // Update Algolia index with correct partial update structure
             await client.partialUpdateObject({
                 indexName: 'products',
                 objectID: product._id.toString(),
                 attributesToUpdate: {
-                    productTitle: product.productTitle,
-                    category: product.category,
-                    description: product.description,
-                    brand: product.brand,
-                    mainMaterial: product.mainMaterial,
-                    color: product.color
+                    productTitle: populatedProduct.productTitle,
+                    category: {
+                        name: categoryName
+                    },
+                    brand: populatedProduct.brand,
+                    mainMaterial: populatedProduct.mainMaterial,
+                    color: populatedProduct.color,
+                    searchData: `${populatedProduct.productTitle} ${populatedProduct.brand} ${categoryName} ${populatedProduct.mainMaterial} ${populatedProduct.color}`.toLowerCase()
                 }
-            })
+            });
     
             // Check if the product category has changed
             if (category && category !== product.category.toString()) {
@@ -523,16 +534,10 @@ const productController = {
     //Index existing Product in Algolia -- Will be called Once during Development
     indexAllProducts: async(req, res) => {
         try {
-            const products = await Product.find();
-            const objects = products.map(product => ({
-                objectID: product._id.toString(),
-                productTitle: product.productTitle,
-                category: product.category,
-                description: product.description,
-                brand: product.brand,
-                mainMaterial: product.mainMaterial,
-                color: product.color
-            }));
+            const products = await Product.find().populate('category');
+            const objects = await Promise.all(
+                products.map(async (product) => await indexAlgoliaRecord(product))
+            )
 
             await client.saveObjects({
                 indexName: 'products',
