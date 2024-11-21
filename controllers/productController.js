@@ -653,18 +653,18 @@ const productController = {
               { productTitle: searchPattern },
               { description: searchPattern },
               { brand: searchPattern },
-              { 'category.name': searchPattern },
               { subCategories: searchPattern }
             ]
           })
           .populate('category', 'name')
           .populate('inventory', 'quantity')
+          .limit(100);
     
           if (products.length === 0) {
             return res.status(404).json({ message: 'No products found matching the search query' });
           }
     
-          // Sort products by relevance (you may want to implement a more sophisticated sorting algorithm)
+          // Sort products by relevance
           const sortedProducts = products.sort((a, b) => {
             const aRelevance = (a.productTitle.match(searchPattern) || []).length +
                                (a.description.match(searchPattern) || []).length;
@@ -678,6 +678,6 @@ const productController = {
           console.error('Error in advancedSearchForProduct:', error);
           return res.status(500).json({ error: 'An error occurred while searching for products' });
         }
-      }
+      },
 }
 module.exports = productController;
