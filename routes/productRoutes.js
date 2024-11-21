@@ -17,11 +17,11 @@ router.delete('/:id', authenticateAdmin, productController.deleteProduct);
 
 
 //Public Routes
+router.get('/advanced-search', productController.advancedSearchForProduct);
 router.get('/category/:id', productController.viewProductsByCategory);
 router.get('/:id', productController.getSingleProductDetails);
 router.post('/index-products', productController.indexAllProducts);
 router.post('/add-subcat', productController.updateSubCategories);
-router.get('/advanced-search', productController.advancedSearchForProduct);
 
 
 //Test Route
