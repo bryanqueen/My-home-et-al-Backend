@@ -20,6 +20,9 @@ const productSchema = new Schema({
         ref: 'ProductCategory',
         required: true
     },
+    subCategories: [{
+        type: String
+    }],
     description: {
         type: String,
         required: true

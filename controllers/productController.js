@@ -10,26 +10,28 @@ const {algoliasearch} = require('algoliasearch');
 
 
 const client = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_API_KEY);
+// const index = client.initIndex('products');
 
 
 // Helper function to create Algolia record
 const indexAlgoliaRecord = async (product) => {
-    // Ensure category is populated
     const populatedProduct = await Product.findById(product._id).populate('category');
     const categoryName = populatedProduct.category?.name || '';
-
+  
     return {
-        objectID: populatedProduct._id.toString(),
-        productTitle: populatedProduct.productTitle,
-        category: {
-            name: categoryName
-        },
-        brand: populatedProduct.brand,
-        mainMaterial: populatedProduct.mainMaterial,
-        color: populatedProduct.color,
-        searchData: `${populatedProduct.productTitle} ${populatedProduct.brand} ${categoryName} ${populatedProduct.mainMaterial} ${populatedProduct.color}`.toLowerCase()
+      objectID: populatedProduct._id.toString(),
+      productTitle: populatedProduct.productTitle,
+      category: {
+        name: categoryName
+      },
+      subCategories: populatedProduct.subCategories || [],
+      brand: populatedProduct.brand,
+      mainMaterial: populatedProduct.mainMaterial,
+      color: populatedProduct.color,
+      description: populatedProduct.description || '',
+      searchData: `${populatedProduct.productTitle} ${populatedProduct.brand} ${categoryName} ${populatedProduct.subCategories.join(' ')} ${populatedProduct.mainMaterial} ${populatedProduct.color} ${populatedProduct.description || ''}`.toLowerCase()
     };
-};
+  };
 
 
 const productController = {
@@ -39,7 +41,8 @@ const productController = {
             const { 
                 productTitle, 
                 price, 
-                category, 
+                category,
+                subCategories, 
                 description, 
                 inventory, 
                 brand,
@@ -74,10 +77,14 @@ const productController = {
             // Handle keyFeatures array
              const keyFeaturesArray = Array.isArray(keyFeatures) ? keyFeatures : [keyFeatures];
 
+             //Handle subCategories array
+             const subCategoriesArray = Array.isArray(subCategories) ? subCategories : [subCategories];
+
             const product = new Product({ 
                 productTitle, 
                 price, 
-                category, 
+                category,
+                subCategories, 
                 description, 
                 images: imageUrls, 
                 inventory: newInventory._id, 
@@ -155,6 +162,16 @@ const productController = {
                         data.feature4,
                         data.feature5,
                         data.feature6
+                    ].filter(Boolean),
+                    subCategories: [
+                        data.sub1,
+                        data.sub2,
+                        data.sub3,
+                        data.sub4,
+                        data.sub5,
+                        data.sub6,
+                        data.sub7,
+                        data.sub8
                     ].filter(Boolean)
                 };
                 products.push(product)
@@ -206,6 +223,7 @@ const productController = {
                     productTitle: productData.productTitle,
                     price: productData.price,
                     category: category ? category._id : null,
+                    subCategories: productData.subCategories,
                     description: productData.description,
                     images: productData.images,
                     inventory: inventory._id,
@@ -365,6 +383,7 @@ const productController = {
                 productTitle, 
                 price, 
                 category, 
+                subCategories,
                 description, 
                 inventory, 
                 brand,
@@ -422,6 +441,9 @@ const productController = {
     
             // Handle keyFeatures array
             const keyFeaturesArray = Array.isArray(keyFeatures) ? keyFeatures : [keyFeatures];
+
+            //Handle subcategories array
+            const subCategoriesArray = Array.isArray(subCategories) ? subCategories : [subCategories];
     
             // Update product fields
             product.productTitle = productTitle || product.productTitle;
@@ -435,6 +457,7 @@ const productController = {
             product.mainMaterial = mainMaterial || product.mainMaterial;
             product.color = color || product.color;
             product.keyFeatures = keyFeaturesArray.length > 0 ? keyFeaturesArray : product.keyFeatures;
+            product.subCategories = subCategoriesArray.length > 0 ? subCategoriesArray : product.subCategories;
             product.size = size || product.size;
             product.sku = sku || product.sku;
     
@@ -454,6 +477,7 @@ const productController = {
                     category: {
                         name: categoryName
                     },
+                    subCategories: populatedProduct.subCategories,
                     brand: populatedProduct.brand,
                     mainMaterial: populatedProduct.mainMaterial,
                     color: populatedProduct.color,
@@ -548,6 +572,112 @@ const productController = {
         } catch (error) {
             return res.status(500).json({error: error.message})
         }
-    }
+    },
+    updateSubCategories: async (req, res) => {
+        try {
+          const { brandSubCategories } = req.body;
+    
+          if (!brandSubCategories || typeof brandSubCategories !== 'object') {
+            return res.status(400).json({ error: 'Invalid input. brandSubCategories object is required.' });
+          }
+    
+          const updatePromises = Object.entries(brandSubCategories).map(async ([brand, subCategories]) => {
+            const products = await Product.find({ brand: brand });
+    
+            const algoliaUpdates = [];
+            let updateCount = 0;
+    
+            for (const product of products) {
+              const matchedSubCategories = subCategories.filter(subCat => {
+                const subCatLower = subCat.toLowerCase();
+                const titleLower = product.productTitle.toLowerCase();
+                const descLower = (product.description || '').toLowerCase();
+                
+                // Check if the subcategory is a substring of the title or description
+                return titleLower.includes(subCatLower) || descLower.includes(subCatLower) ||
+                  // Check if any word in the subcategory matches a word in the title or description
+                  subCatLower.split(' ').some(word => 
+                    titleLower.split(' ').includes(word) || descLower.split(' ').includes(word)
+                  );
+              });
+    
+              if (matchedSubCategories.length > 0) {
+                product.subCategories = matchedSubCategories;
+                await product.save();
+    
+                console.log(`Updating product: ${product._id}, Brand: ${brand}, Matched SubCategories: ${matchedSubCategories.join(', ')}`);
+    
+                const algoliaRecord = await indexAlgoliaRecord(product);
+                algoliaUpdates.push({
+                  objectID: product._id.toString(),
+                  subCategories: matchedSubCategories,
+                  searchData: algoliaRecord.searchData
+                });
+    
+                updateCount++;
+              }
+            }
+    
+            // Perform batch update for Algolia
+            if (algoliaUpdates.length > 0) {
+              await client.partialUpdateObjects({
+                indexName: 'products',
+                objects: algoliaUpdates,
+                createIfNotExists: true
+              });
+              console.log(`Algolia batch update completed for ${algoliaUpdates.length} products of brand ${brand}`);
+            }
+    
+            return `Updated ${updateCount} products for ${brand}`;
+          });
+    
+          const results = await Promise.all(updatePromises);
+          res.json({ message: 'SubCategories updated for all brands', results });
+        } catch (error) {
+          console.error('Error in updateSubCategories:', error);
+          res.status(500).json({ error: error.message, stack: error.stack });
+        }
+      },
+      advancedSearchForProduct: async (req, res) => {
+        try {
+          const { query } = req.query;
+    
+          if (!query) {
+            return res.status(400).json({ error: 'Search query is required' });
+          }
+    
+          const searchPattern = new RegExp(query, 'i');
+    
+          const products = await Product.find({
+            $or: [
+              { productTitle: searchPattern },
+              { description: searchPattern },
+              { brand: searchPattern },
+              { 'category.name': searchPattern },
+              { subCategories: searchPattern }
+            ]
+          })
+          .populate('category', 'name')
+          .populate('inventory', 'quantity')
+    
+          if (products.length === 0) {
+            return res.status(404).json({ message: 'No products found matching the search query' });
+          }
+    
+          // Sort products by relevance (you may want to implement a more sophisticated sorting algorithm)
+          const sortedProducts = products.sort((a, b) => {
+            const aRelevance = (a.productTitle.match(searchPattern) || []).length +
+                               (a.description.match(searchPattern) || []).length;
+            const bRelevance = (b.productTitle.match(searchPattern) || []).length +
+                               (b.description.match(searchPattern) || []).length;
+            return bRelevance - aRelevance;
+          });
+    
+          res.json(sortedProducts);
+        } catch (error) {
+          console.error('Error in advancedSearchForProduct:', error);
+          return res.status(500).json({ error: 'An error occurred while searching for products' });
+        }
+      }
 }
 module.exports = productController;
