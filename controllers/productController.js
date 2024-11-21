@@ -646,15 +646,22 @@ const productController = {
             return res.status(400).json({ error: 'Search query is required' });
           }
     
-          const searchPattern = new RegExp(query, 'i');
+          // Split the query into individual words
+          const queryWords = query.toLowerCase().split(/\s+/).filter(word => word.length > 0);
+    
+          // Create a regex pattern for each word
+          const regexPatterns = queryWords.map(word => new RegExp(word, 'i'));
     
           const products = await Product.find({
-            $or: [
-              { productTitle: searchPattern },
-              { description: searchPattern },
-              { brand: searchPattern },
-              { subCategories: searchPattern }
-            ]
+            $and: regexPatterns.map(pattern => ({
+              $or: [
+                { productTitle: pattern },
+                { description: pattern },
+                { brand: pattern },
+                { subCategories: pattern },
+                { 'category.name': pattern }
+              ]
+            }))
           })
           .populate('category', 'name')
           .populate('inventory', 'quantity')
@@ -666,10 +673,26 @@ const productController = {
     
           // Sort products by relevance
           const sortedProducts = products.sort((a, b) => {
-            const aRelevance = (a.productTitle.match(searchPattern) || []).length +
-                               (a.description.match(searchPattern) || []).length;
-            const bRelevance = (b.productTitle.match(searchPattern) || []).length +
-                               (b.description.match(searchPattern) || []).length;
+            const aRelevance = queryWords.reduce((acc, word) => {
+              const pattern = new RegExp(word, 'i');
+              return acc + 
+                (pattern.test(a.productTitle) ? 3 : 0) +
+                (pattern.test(a.brand) ? 2 : 0) +
+                (pattern.test(a.description) ? 1 : 0) +
+                (a.subCategories.some(subCat => pattern.test(subCat)) ? 2 : 0) +
+                (pattern.test(a.category.name) ? 2 : 0);
+            }, 0);
+    
+            const bRelevance = queryWords.reduce((acc, word) => {
+              const pattern = new RegExp(word, 'i');
+              return acc + 
+                (pattern.test(b.productTitle) ? 3 : 0) +
+                (pattern.test(b.brand) ? 2 : 0) +
+                (pattern.test(b.description) ? 1 : 0) +
+                (b.subCategories.some(subCat => pattern.test(subCat)) ? 2 : 0) +
+                (pattern.test(b.category.name) ? 2 : 0);
+            }, 0);
+    
             return bRelevance - aRelevance;
           });
     
