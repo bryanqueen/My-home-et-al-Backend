@@ -677,51 +677,78 @@ const productController = {
       },
       getSuggestions: async (req, res) => {
         const { query } = req.query;
-        const userId = req.user?._id || null; // Assume user authentication middleware sets `req.user`
-        const ipAddress = req.ip; // Capture user's IP address
-      
+        const userId = req.user?._id || null;
+        const ipAddress = req.ip;
+    
         if (!query) {
           return res.status(400).json({ message: 'Query parameter is required.' });
         }
-      
+    
         try {
           const cacheKey = `suggestions_${query.toLowerCase()}`;
-          memcached.get(cacheKey, async (err, cachedSuggestions) => {
-            if (err) {
-              console.error('Cache error:', err);
-              return res.status(500).json({ message: 'Cache error.' });
-            }
-      
-            let suggestions = [];
-            if (cachedSuggestions) {
-              suggestions = JSON.parse(cachedSuggestions);
+    
+          // Wrap Memcached get in a Promise
+          const getCachedSuggestions = () => {
+            return new Promise((resolve, reject) => {
+              memcached.get(cacheKey, (err, data) => {
+                if (err) {
+                  console.error('Memcached error:', err);
+                  reject(err);
+                } else {
+                  resolve(data);
+                }
+              });
+            });
+          };
+    
+          let suggestions;
+          try {
+            const cachedData = await getCachedSuggestions();
+            if (cachedData) {
+              suggestions = JSON.parse(cachedData);
+              console.log('Retrieved suggestions from cache');
             } else {
-              // Fetch suggestions from the database
+              console.log('Cache miss, fetching from database');
               suggestions = await Suggestion.find({
                 $or: [
                   { suggestionText: { $regex: `^${query}`, $options: 'i' } },
                   { keywords: { $regex: `^${query}`, $options: 'i' } },
                 ],
               })
-                .sort({ type: 1, popularityScore: -1 }) // Rank by type priority and popularity
+                .sort({ type: 1, popularityScore: -1 })
                 .limit(8);
-      
-              // Cache the suggestions for 24 hours
+    
+              console.log(`Found ${suggestions.length} suggestions in database`);
+    
+              // Cache the results
               memcached.set(cacheKey, JSON.stringify(suggestions), 24 * 60 * 60, (err) => {
                 if (err) {
                   console.error('Cache save error:', err);
+                } else {
+                  console.log('Saved suggestions to cache');
                 }
               });
             }
-      
-            // Log the search query with resultsCount
-            await logSearchQuery(query, userId, ipAddress, suggestions.length);
-      
-            res.status(200).json(suggestions);
-          });
+          } catch (cacheError) {
+            console.error('Error with cache, falling back to database:', cacheError);
+            suggestions = await Suggestion.find({
+              $or: [
+                { suggestionText: { $regex: `^${query}`, $options: 'i' } },
+                { keywords: { $regex: `^${query}`, $options: 'i' } },
+              ],
+            })
+              .sort({ type: 1, popularityScore: -1 })
+              .limit(8);
+            console.log(`Found ${suggestions.length} suggestions in database (cache fallback)`);
+          }
+    
+          await logSearchQuery(query, userId, ipAddress, suggestions.length);
+    
+          console.log('Sending response with suggestions');
+          res.status(200).json(suggestions);
         } catch (error) {
-          console.error('Error fetching suggestions:', error);
-          res.status(500).json({ message: 'Failed to fetch suggestions.' });
+          console.error('Error in getSuggestions:', error);
+          res.status(500).json({ message: 'Failed to fetch suggestions.', error: error.message });
         }
       }
 }
