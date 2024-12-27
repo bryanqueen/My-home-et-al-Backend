@@ -14,6 +14,7 @@ const webhookRoutes = require('./routes/webhookRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const addressRoutes = require('./routes/addressRoutes');
+const suggestionRoutes = require('./routes/suggestionRoutes');
 
 
 
@@ -57,6 +58,7 @@ app.use(`${path}/admin-wallet`, adminWalletRoutes);
 app.use(`${path}/order`, orderRoutes);
 app.use(`${path}/payment`, paymentRoutes);
 app.use(`${path}/address`, addressRoutes);
+app.use(`${path}/suggestion`, suggestionRoutes);
 //Webhook Route middleware
 app.use(`${path}/webhook`, webhookRoutes);
 app.use((err, req, res, next) => {

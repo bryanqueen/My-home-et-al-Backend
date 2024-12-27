@@ -7,31 +7,35 @@ const multer = require('multer');
 const uploadCsv = multer({dest:'uploads/csv'});
 const cloudinary = require('../config/cloudinary');
 const {algoliasearch} = require('algoliasearch');
+const Memcached = require('memcached');
+const logSearchQuery = require('../utils/logSearchQuery')
 
 
 const client = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_API_KEY);
 // const index = client.initIndex('products');
 
+const memcached = new Memcached(process.env.MEMCACHED_SERVER || 'localhost:11211')
+
 
 // Helper function to create Algolia record
-const indexAlgoliaRecord = async (product) => {
-    const populatedProduct = await Product.findById(product._id).populate('category');
-    const categoryName = populatedProduct.category?.name || '';
+// const indexAlgoliaRecord = async (product) => {
+//     const populatedProduct = await Product.findById(product._id).populate('category');
+//     const categoryName = populatedProduct.category?.name || '';
   
-    return {
-      objectID: populatedProduct._id.toString(),
-      productTitle: populatedProduct.productTitle,
-      category: {
-        name: categoryName
-      },
-      subCategories: populatedProduct.subCategories || [],
-      brand: populatedProduct.brand,
-      mainMaterial: populatedProduct.mainMaterial,
-      color: populatedProduct.color,
-      description: populatedProduct.description || '',
-      searchData: `${populatedProduct.productTitle} ${populatedProduct.brand} ${categoryName} ${populatedProduct.subCategories.join(' ')} ${populatedProduct.mainMaterial} ${populatedProduct.color} ${populatedProduct.description || ''}`.toLowerCase()
-    };
-  };
+//     return {
+//       objectID: populatedProduct._id.toString(),
+//       productTitle: populatedProduct.productTitle,
+//       category: {
+//         name: categoryName
+//       },
+//       subCategories: populatedProduct.subCategories || [],
+//       brand: populatedProduct.brand,
+//       mainMaterial: populatedProduct.mainMaterial,
+//       color: populatedProduct.color,
+//       description: populatedProduct.description || '',
+//       searchData: `${populatedProduct.productTitle} ${populatedProduct.brand} ${categoryName} ${populatedProduct.subCategories.join(' ')} ${populatedProduct.mainMaterial} ${populatedProduct.color} ${populatedProduct.description || ''}`.toLowerCase()
+//     };
+//   };
 
 
 const productController = {
@@ -328,35 +332,7 @@ const productController = {
             return res.status(500).json({error: error.message})
         }
     },
-    searchForProduct: async (req, res) => {
-        //These function will be used for searching products
-        try {
-            const { query } = req.query; // Get the search query from the request
 
-            if (!query) {
-                return res.status(400).json({ error: 'Search query is required' });
-            }
-    
-            // Create a regex pattern for case-insensitive search
-            const searchPattern = new RegExp(query, 'i');
-    
-            // Search for products matching the query in title, description, or brand
-            const products = await Product.find({
-                $or: [
-                    { productTitle: searchPattern },
-                    { brand: searchPattern }
-                ]
-            }).populate('category'); // Populate the category field if needed
-    
-            if (products.length === 0) {
-                return res.status(404).json({ message: 'No products found matching the search query' });
-            }
-    
-            res.json(products);
-        } catch (error) {
-            return res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
-        }
-    },
     fetchNewProducts: async (req, res) => {
         //These are products added to the database within the timeframe of 48hrs, after 48hrs, the product can no longer be tagged a new product
             try {
@@ -658,7 +634,6 @@ const productController = {
                 { productTitle: pattern },
                 { description: pattern },
                 { brand: pattern },
-                { subCategories: pattern },
                 { 'category.name': pattern }
               ]
             }))
@@ -679,7 +654,6 @@ const productController = {
                 (pattern.test(a.productTitle) ? 3 : 0) +
                 (pattern.test(a.brand) ? 2 : 0) +
                 (pattern.test(a.description) ? 1 : 0) +
-                (a.subCategories.some(subCat => pattern.test(subCat)) ? 2 : 0) +
                 (pattern.test(a.category.name) ? 2 : 0);
             }, 0);
     
@@ -689,7 +663,6 @@ const productController = {
                 (pattern.test(b.productTitle) ? 3 : 0) +
                 (pattern.test(b.brand) ? 2 : 0) +
                 (pattern.test(b.description) ? 1 : 0) +
-                (b.subCategories.some(subCat => pattern.test(subCat)) ? 2 : 0) +
                 (pattern.test(b.category.name) ? 2 : 0);
             }, 0);
     
@@ -702,5 +675,54 @@ const productController = {
           return res.status(500).json({ error: 'An error occurred while searching for products' });
         }
       },
+      getSuggestions: async (req, res) => {
+        const { query } = req.query;
+        const userId = req.user?._id || null; // Assume user authentication middleware sets `req.user`
+        const ipAddress = req.ip; // Capture user's IP address
+      
+        if (!query) {
+          return res.status(400).json({ message: 'Query parameter is required.' });
+        }
+      
+        try {
+          const cacheKey = `suggestions_${query.toLowerCase()}`;
+          memcached.get(cacheKey, async (err, cachedSuggestions) => {
+            if (err) {
+              console.error('Cache error:', err);
+              return res.status(500).json({ message: 'Cache error.' });
+            }
+      
+            let suggestions = [];
+            if (cachedSuggestions) {
+              suggestions = JSON.parse(cachedSuggestions);
+            } else {
+              // Fetch suggestions from the database
+              suggestions = await Suggestion.find({
+                $or: [
+                  { suggestionText: { $regex: `^${query}`, $options: 'i' } },
+                  { keywords: { $regex: `^${query}`, $options: 'i' } },
+                ],
+              })
+                .sort({ type: 1, popularityScore: -1 }) // Rank by type priority and popularity
+                .limit(8);
+      
+              // Cache the suggestions for 24 hours
+              memcached.set(cacheKey, JSON.stringify(suggestions), 24 * 60 * 60, (err) => {
+                if (err) {
+                  console.error('Cache save error:', err);
+                }
+              });
+            }
+      
+            // Log the search query with resultsCount
+            await logSearchQuery(query, userId, ipAddress, suggestions.length);
+      
+            res.status(200).json(suggestions);
+          });
+        } catch (error) {
+          console.error('Error fetching suggestions:', error);
+          res.status(500).json({ message: 'Failed to fetch suggestions.' });
+        }
+      }
 }
 module.exports = productController;

@@ -87,40 +87,54 @@ const productCategoryController = {
     
     editProductCategory: async (req, res) => {
         try {
-            const productCategoryId = req.params.id;
-            const {name} = req.body;
-
-            const existingProductCategory = await ProductCategory.findOne({name});
-
-            if(existingProductCategory && existingProductCategory._id.toString() !== productCategoryId){
-                return res.status(400).json({error: 'A product category with this name already exists.'})
+            const productCategoryId = req.params.id; // This is correct for your existing route
+            const { name } = req.body;
+            
+            // First, get the existing category
+            const existingCategory = await ProductCategory.findById(productCategoryId);
+            if (!existingCategory) {
+                return res.status(404).json({ error: 'Product Category not found' });
             }
-
-            let imageUrl = null;
-
-            //Check if a file was uploaded
-            if(req.file) {
-                //Upload the single image to Cloudinary
-                const result = await cloudinary.uploader.upload(req.file.path, {
-                    folder: 'product_category_images'
-                });
-                imageUrl = result.secure_url;
+    
+            // Check if the new name conflicts with other categories
+            const nameConflict = await ProductCategory.findOne({ name });
+            if (nameConflict && nameConflict._id.toString() !== productCategoryId) {
+                return res.status(400).json({ error: 'A product category with this name already exists.' });
             }
-
+    
+            // Prepare update object starting with existing data
+            const updateData = {
+                name: name || existingCategory.name,
+                product_category_image: existingCategory.product_category_image // Keep existing image by default
+            };
+    
+            // Only update image if a new file was uploaded
+            if (req.file) {
+                try {
+                    const result = await cloudinary.uploader.upload(req.file.path, {
+                        folder: 'product_category_images'
+                    });
+                    updateData.product_category_image = result.secure_url;
+                } catch (uploadError) {
+                    console.error('Error uploading image to Cloudinary:', uploadError);
+                    return res.status(500).json({ error: 'Error uploading image to Cloudinary' });
+                }
+            }
+    
+            // Update the category with the prepared data
             const updatedProductCategory = await ProductCategory.findByIdAndUpdate(
                 productCategoryId,
-                { 
-                    name,
-                    product_category_image: imageUrl
-                },
-                {new: true}
+                updateData,
+                { new: true }
             );
-            if (!updatedProductCategory) {
-                return res.status(404).json({error: 'Product Category not found'})
-            }
-            res.json({message: 'Product category updated'})
+    
+            res.json({
+                message: 'Product category updated successfully',
+                category: updatedProductCategory
+            });
         } catch (error) {
-            res.status(500).json({error: 'Ooops!! an error occured, please refresh'})
+            console.error('Error updating category:', error);
+            res.status(500).json({ error: 'Oops! An error occurred, please refresh' });
         }
     },
     deleteProductCategory: async (req, res) => {
