@@ -7,7 +7,9 @@ const Order = require('../models/Order');
 const crypto = require('crypto');
 const sendVerificationEmail = require('../utils/sendVerificationEmail');
 const sendPasswordResetEmail = require('../utils/sendResetEmail');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { type } = require('os');
+const { channel } = require('diagnostics_channel');
 
 
 
@@ -73,6 +75,52 @@ const userController = {
 
             res.json({message: `We sent an OTP to ${email}, please verify `, referralCode: newReferralCode})
             
+        } catch (error) {
+            return res.status(500).json({error: error.message})
+        }
+    },
+    sendWhatsappOTP: async (req, res) => {
+        try {
+            const {email} = req.body;
+            const user = await User.findOne({email})
+            if(!user){
+                return res.status(404).json({error: 'User not found'})
+            }
+            if(!user.phone_number){
+                return res.status(404).json({error: 'User does not have a phone number'})
+            }
+            //Generate 5 digit otp
+            const otp = crypto.randomInt(10000,100000);
+            const otpExpiry = Date.now() + 10 * 60 * 1000;
+
+            //Prepare Termii API Payload
+            const payload = {
+                to: user.phone_number,
+                from: 'Myhomeetal',
+                sms: `Your Myhomeetal verification code is ${otp}, Valid for 10 minutes, one-time use only.`,
+                type: 'plain',
+                channel: 'whatsapp',
+                api_key: process.env.TERMII_API_KEY
+            }
+
+            //Send OTP via Termii API
+            const response = await fetch('https://v3.api.termii.com/api/sms/otp/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if(!response.ok){
+                return res.status(500).json({error: 'Failed to send OTP to user\'s phone number'})
+            }
+            //Save OTP and OTP expiry to user's document
+            user.otp = otp;
+            user.otpExpiry = otpExpiry;
+            await user.save();
+
+            res.json({message: `We sent an OTP to ${user.phone_number}, please verify`})
         } catch (error) {
             return res.status(500).json({error: error.message})
         }

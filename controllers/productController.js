@@ -6,12 +6,12 @@ const fs = require('fs');
 const multer = require('multer');
 const uploadCsv = multer({dest:'uploads/csv'});
 const cloudinary = require('../config/cloudinary');
-const {algoliasearch} = require('algoliasearch');
+// const {algoliasearch} = require('algoliasearch');
 const Memcached = require('memcached');
 const logSearchQuery = require('../utils/logSearchQuery')
 
 
-const client = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_API_KEY);
+// const client = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_API_KEY);
 // const index = client.initIndex('products');
 
 const memcached = new Memcached(process.env.MEMCACHED_SERVER || 'localhost:11211')
@@ -45,8 +45,7 @@ const productController = {
             const { 
                 productTitle, 
                 price, 
-                category,
-                subCategories, 
+                category, 
                 description, 
                 inventory, 
                 brand,
@@ -82,13 +81,12 @@ const productController = {
              const keyFeaturesArray = Array.isArray(keyFeatures) ? keyFeatures : [keyFeatures];
 
              //Handle subCategories array
-             const subCategoriesArray = Array.isArray(subCategories) ? subCategories : [subCategories];
+            //  const subCategoriesArray = Array.isArray(subCategories) ? subCategories : [subCategories];
 
             const product = new Product({ 
                 productTitle, 
                 price, 
                 category,
-                subCategories, 
                 description, 
                 images: imageUrls, 
                 inventory: newInventory._id, 
@@ -105,12 +103,12 @@ const productController = {
 
             await product.save();
 
-            const algoliaRecord = await indexAlgoliaRecord(product);
+            // const algoliaRecord = await indexAlgoliaRecord(product);
 
-            await client.saveObject({
-                indexName: 'products',
-                body: algoliaRecord
-            })
+            // await client.saveObject({
+            //     indexName: 'products',
+            //     body: algoliaRecord
+            // })
 
             // Check if product category exists in the database
             const productCategory = await ProductCategory.findById(category).populate('products');
@@ -166,16 +164,6 @@ const productController = {
                         data.feature4,
                         data.feature5,
                         data.feature6
-                    ].filter(Boolean),
-                    subCategories: [
-                        data.sub1,
-                        data.sub2,
-                        data.sub3,
-                        data.sub4,
-                        data.sub5,
-                        data.sub6,
-                        data.sub7,
-                        data.sub8
                     ].filter(Boolean)
                 };
                 products.push(product)
@@ -227,7 +215,6 @@ const productController = {
                     productTitle: productData.productTitle,
                     price: productData.price,
                     category: category ? category._id : null,
-                    subCategories: productData.subCategories,
                     description: productData.description,
                     images: productData.images,
                     inventory: inventory._id,
@@ -237,7 +224,7 @@ const productController = {
                     modelNumber: productData.modelNumber,
                     mainMaterial: productData.mainMaterial,
                     color: productData.color,
-                    size:  productData.color,
+                    size:  productData.size,
                     sku: productData.sku,
                     keyFeatures: productData.keyFeatures
                 });
@@ -245,11 +232,11 @@ const productController = {
                 // console.log('Product to be saved:', product);
     
                 const savedProduct = await product.save();
-                const algoliaRecord = await indexAlgoliaRecord(savedProduct);
-                await client.saveObject({
-                    indexName: 'products',
-                    body: algoliaRecord
-                })
+                // const algoliaRecord = await indexAlgoliaRecord(savedProduct);
+                // await client.saveObject({
+                //     indexName: 'products',
+                //     body: algoliaRecord
+                // })
                 publishedProductsIds.push(savedProduct._id);
     
                 if (category) {
@@ -321,11 +308,6 @@ const productController = {
             if (!product) {
                 return res.status(404).json({message: 'Product not found'})
             }
-            // Convert the product to a plain JavaScript object
-            // const productObject = product.toObject();
-
-            // Add the category name to the response
-            // productObject.categoryName = product.category ? product.category.name : null;
 
             res.json(product);
         } catch (error) {
@@ -359,7 +341,6 @@ const productController = {
                 productTitle, 
                 price, 
                 category, 
-                subCategories,
                 description, 
                 inventory, 
                 brand,
@@ -419,7 +400,7 @@ const productController = {
             const keyFeaturesArray = Array.isArray(keyFeatures) ? keyFeatures : [keyFeatures];
 
             //Handle subcategories array
-            const subCategoriesArray = Array.isArray(subCategories) ? subCategories : [subCategories];
+            // const subCategoriesArray = Array.isArray(subCategories) ? subCategories : [subCategories];
     
             // Update product fields
             product.productTitle = productTitle || product.productTitle;
@@ -433,7 +414,6 @@ const productController = {
             product.mainMaterial = mainMaterial || product.mainMaterial;
             product.color = color || product.color;
             product.keyFeatures = keyFeaturesArray.length > 0 ? keyFeaturesArray : product.keyFeatures;
-            product.subCategories = subCategoriesArray.length > 0 ? subCategoriesArray : product.subCategories;
             product.size = size || product.size;
             product.sku = sku || product.sku;
     
@@ -445,21 +425,21 @@ const productController = {
             const categoryName = populatedProduct.category?.name || '';
 
             // Update Algolia index with correct partial update structure
-            await client.partialUpdateObject({
-                indexName: 'products',
-                objectID: product._id.toString(),
-                attributesToUpdate: {
-                    productTitle: populatedProduct.productTitle,
-                    category: {
-                        name: categoryName
-                    },
-                    subCategories: populatedProduct.subCategories,
-                    brand: populatedProduct.brand,
-                    mainMaterial: populatedProduct.mainMaterial,
-                    color: populatedProduct.color,
-                    searchData: `${populatedProduct.productTitle} ${populatedProduct.brand} ${categoryName} ${populatedProduct.mainMaterial} ${populatedProduct.color}`.toLowerCase()
-                }
-            });
+            // await client.partialUpdateObject({
+            //     indexName: 'products',
+            //     objectID: product._id.toString(),
+            //     attributesToUpdate: {
+            //         productTitle: populatedProduct.productTitle,
+            //         category: {
+            //             name: categoryName
+            //         },
+            //         subCategories: populatedProduct.subCategories,
+            //         brand: populatedProduct.brand,
+            //         mainMaterial: populatedProduct.mainMaterial,
+            //         color: populatedProduct.color,
+            //         searchData: `${populatedProduct.productTitle} ${populatedProduct.brand} ${categoryName} ${populatedProduct.mainMaterial} ${populatedProduct.color}`.toLowerCase()
+            //     }
+            // });
     
             // Check if the product category has changed
             if (category && category !== product.category.toString()) {
@@ -481,6 +461,7 @@ const productController = {
     
             return res.status(200).json({ message: 'Product updated successfully', product });
         } catch (error) {
+          console.log(error)
             return res.status(500).json({ error: error.message });
         }
     },
@@ -503,10 +484,10 @@ const productController = {
             await Product.findByIdAndDelete(productId);
 
             //Delete index from Algolia
-            await client.deleteObject({
-                indexName: 'products',
-                objectID: productId
-            })
+            // await client.deleteObject({
+            //     indexName: 'products',
+            //     objectID: productId
+            // })
 
             res.json({message: 'Product deleted successfully'})
         } catch (error) {
@@ -539,10 +520,10 @@ const productController = {
                 products.map(async (product) => await indexAlgoliaRecord(product))
             )
 
-            await client.saveObjects({
-                indexName: 'products',
-                objects: objects
-            });
+            // await client.saveObjects({
+            //     indexName: 'products',
+            //     objects: objects
+            // });
 
             res.status(200).json({message: 'All Products have been Successfully Indexed in Algolia'})
         } catch (error) {
@@ -595,14 +576,14 @@ const productController = {
             }
     
             // Perform batch update for Algolia
-            if (algoliaUpdates.length > 0) {
-              await client.partialUpdateObjects({
-                indexName: 'products',
-                objects: algoliaUpdates,
-                createIfNotExists: true
-              });
-              console.log(`Algolia batch update completed for ${algoliaUpdates.length} products of brand ${brand}`);
-            }
+            // if (algoliaUpdates.length > 0) {
+            //   await client.partialUpdateObjects({
+            //     indexName: 'products',
+            //     objects: algoliaUpdates,
+            //     createIfNotExists: true
+            //   });
+            //   console.log(`Algolia batch update completed for ${algoliaUpdates.length} products of brand ${brand}`);
+            // }
     
             return `Updated ${updateCount} products for ${brand}`;
           });

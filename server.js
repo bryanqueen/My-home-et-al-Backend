@@ -32,7 +32,7 @@ app.use(cors());
 async function connectDB() {
     try {
         console.log('Attempting to connect to MongoDB...');
-        console.log('MONGO_URI:', process.env.MONGO_URI); // Be careful not to log this in production
+        console.log('MONGO_URI:', process.env.MONGO_URI);
         const connection = await mongoose.connect(process.env.MONGO_URI);
         console.log(`Mongoose Connection established @${connection.connection.host}`);
     } catch (error) {

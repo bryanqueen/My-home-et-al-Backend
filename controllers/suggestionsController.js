@@ -1,7 +1,7 @@
 const Suggestion = require('../models/Suggestion');
 const Product = require('../models/Product');
 const ProductCategory = require('../models/ProductCategory');
-const refineProductDetails = require('../utils/refineProduct');
+// const refineProductDetails = require('../utils/refineProduct');
 
 const suggestionController = {
     populateFromProductandCategories: async (req, res) => {
