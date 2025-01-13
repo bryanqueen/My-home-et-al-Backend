@@ -10,9 +10,9 @@ const { createProductSubCategory,
 const upload = require('../config/multer');
 
 // Admin routes
-router.post('/create', upload.single('subCategoryImage'), createProductSubCategory)
+router.post('/create', authenticateAdmin, upload.single('subCategoryImage'), createProductSubCategory)
 router.put('/update/:id', authenticateAdmin, upload.single('subCategoryImage'), updateSubCategory)
-router.delete('/delete/:id',  deleteSubCategory)
+router.delete('/delete/:id', authenticateAdmin, deleteSubCategory)
 
 
 // public routes
