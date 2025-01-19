@@ -35,7 +35,9 @@ const createProductSubCategory = async (req, res) => {
 
         const data = {
             name,
-            subCategoryImage
+            subCategoryImage,
+            createdBy: req.admin.email,
+            createdOn: new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' })
         };
 
         // console.log(subCategoryImage)
@@ -167,7 +169,9 @@ const updateSubCategory = async (req, res) => {
         
         const Data = {
             name: name || updateData.name,
-            subCategoryImage: newImage || updateData.subCategoryImage
+            subCategoryImage: newImage || updateData.subCategoryImage,
+            updatedBy: req.admin.email,
+            updatedOn: new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' })
         }
 
         // console.log(Data.subCategoryImage)
