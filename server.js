@@ -9,6 +9,10 @@ const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 const productCategoryRoutes = require('./routes/productCategoryRoutes');
+
+const productSubCategoryRoutes = require('./routes/productSubCategoryRoutes');  // new feature routes
+const bannerRoutes = require('./routes/bannerRoutes') // new feature routes
+
 const reviewRoutes = require('./routes/reviewRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -53,6 +57,10 @@ app.use(`${path}/admin`, adminRoutes);
 app.use(`${path}/user`, userRoutes);
 app.use(`${path}/product`, productRoutes);
 app.use(`${path}/product-category`, productCategoryRoutes);
+
+app.use(`${path}/sub-category`, productSubCategoryRoutes); // new routes
+app.use(`${path}/banner`, bannerRoutes); // new routes
+
 app.use(`${path}/review`, reviewRoutes);
 app.use(`${path}/admin-wallet`, adminWalletRoutes);
 app.use(`${path}/order`, orderRoutes);

@@ -1,12 +1,14 @@
 const productSubCategoryModel = require('../models/ProductSubCategory');
-const adminModel = require('../models/Admin');
+const productCategory = require('../models/ProductCategory');
+const productModel = require('../models/Product')
 const cloudinary = require("../config/cloudinary");
+const mongoose = require('mongoose');
 const fs = require("fs");
 
 
 const createProductSubCategory = async (req, res) => {
     try {
-        const { name } = req.body;
+        const { name, category, products} = req.body;
 
         // Check if a subcategory with the same name already exists
         const existingSubCategory = await productSubCategoryModel.findOne({ name });
@@ -36,6 +38,8 @@ const createProductSubCategory = async (req, res) => {
         const data = {
             name,
             subCategoryImage,
+            category,
+            products,
             createdBy: req.admin.email,
             createdOn: new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' })
         };
@@ -46,6 +50,18 @@ const createProductSubCategory = async (req, res) => {
         const subCategory = new productSubCategoryModel(data);
         const newSubCategory = await subCategory.save();
 
+        const productsCategory = await productCategory.findById(category).populate('subCategory')
+        .populate('products')
+
+        if(productsCategory) {
+            // const subCategoryId = data._id
+            productsCategory.subCategory.push(data);
+            await productsCategory.save();
+
+        // Debug: Check category products
+    // const categoryProducts = productsCategory.products.map(product => product._id);
+    // console.log(categoryProducts);
+        }
         res.status(200).json({
             message: 'Successfully created a new subcategory',
             subCategory: newSubCategory,
