@@ -77,7 +77,11 @@ const productSchema = new Schema({
     },
     updatedBy: {
         type: String
-    }
+    },
+    inStock: {
+        type: Boolean,
+        default: false
+    } 
 
 });
 

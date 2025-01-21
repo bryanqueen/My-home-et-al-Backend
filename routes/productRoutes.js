@@ -14,6 +14,7 @@ router.get('/all-products', authenticateAdmin, productController.fetchAllProduct
 router.delete('/bulk-delete', authenticateAdmin, productController.bulkDeleteProducts);
 router.put('/:id', upload.array('images', 10), authenticateAdmin, productController.editProduct);
 router.delete('/:id', authenticateAdmin, productController.deleteProduct);
+router.put('/stock-update/:id', authenticateAdmin, productController.updateStock);
 
 
 //Public Routes

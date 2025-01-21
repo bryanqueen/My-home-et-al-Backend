@@ -104,6 +104,7 @@ const productController = {
                 size,
                 sku,
                 subCategory,
+                // inStock: newInventory.quantity,
                 createdBy: req.admin.email,
                 createdOn: new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' })
             });
@@ -745,6 +746,98 @@ const productController = {
           console.error('Error in getSuggestions:', error);
           res.status(500).json({ message: 'Failed to fetch suggestions.', error: error.message });
         }
-      }
+      },
+
+      updateStock: async (req, res) => {
+        try {
+          const productId = req.params.id;
+          // Get the inStock value from request body
+          const { inStock } = req.body;
+      
+          // Find the product
+          const product = await Product.findById(productId);
+          
+          // Check if product exists
+          if (!product) {
+            return res.status(404).json({
+              message: 'trying to update stock of unavailable product'
+            });
+          }
+    
+          const stockData = {
+            inStock: inStock 
+          };
+      
+          // Update the product with new stock status
+          const updatedProduct = await Product.findByIdAndUpdate(
+            productId,
+            stockData,
+            { new: true, runValidators: true }
+          );
+          return res.status(200).json({
+            message: 'Stock availability updated successfully',
+            data: updatedProduct
+          });
+      
+        } catch (error) {
+          console.error('Stock update error:', error);
+          return res.status(500).json({
+            message: 'Failed to update stock availability',
+            error: error.message
+          });
+        }
+
+        // try {
+        //   const productId = req.params.id;
+        //   const { inStock } = req.body;
+      
+        //   console.log('Request body:', req.body);
+        //   console.log('Received inStock value:', inStock);
+        //   console.log('Type of inStock:', typeof inStock);
+      
+        //   // Find the product
+        //   const product = await Product.findById(productId);
+          
+        //   if (!product) {
+        //     return res.status(404).json({
+        //       success: false,
+        //       message: 'Product not found'
+        //     });
+        //   }
+      
+        //   console.log('Current product inStock:', product.inStock);
+      
+        //   // Ensure we're setting a boolean value
+        //   const newInStock = Boolean(inStock);
+          
+        //   console.log('New inStock value to be set:', newInStock);
+      
+        //   const updatedProduct = await Product.findByIdAndUpdate(
+        //     productId,
+        //     { inStock: newInStock },
+        //     { new: true, runValidators: true }
+        //   );
+      
+        //   console.log('Updated product inStock:', updatedProduct.inStock);
+      
+        //   return res.status(200).json({
+        //     success: true,
+        //     message: 'Stock availability updated successfully',
+        //     data: updatedProduct
+        //   });
+      
+        // } catch (error) {
+        //   console.error('Stock update error:', error);
+        //   return res.status(500).json({
+        //     success: false,
+        //     message: 'Failed to update stock availability',
+        //     error: error.message
+        //   });
+        // }
+       }
+
+
+
+
 }
 module.exports = productController;
