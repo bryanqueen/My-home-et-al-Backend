@@ -20,6 +20,11 @@ const productSchema = new Schema({
         ref: 'ProductCategory',
         required: true
     },
+    subCategory: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ProductSubCategory',
+        required: true
+    },
     description: {
         type: String,
         required: true
@@ -61,19 +66,15 @@ const productSchema = new Schema({
     size: {
         type: String
     },
-    createdAt: {
-        type: Date,
-        default: Date.now()
+    createdOn: {
+        type: String
     },
-    updatedAt: {
-        type: Date,
-        default: Date.now()
-    },
-
     createdBy: {
         type: String
     },
-
+    updatedOn: {
+        type: String
+    },
     updatedBy: {
         type: String
     }

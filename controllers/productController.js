@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const ProductCategory = require('../models/ProductCategory');
+const ProductSubCategory = require('../models/ProductSubCategory');
 const Inventory = require('../models/Inventory');
 const csv = require('csv-parser');
 const fs = require('fs');
@@ -55,13 +56,16 @@ const productController = {
                 color,
                 keyFeatures,
                 size,
-                sku
+                sku,
+                subCategory
             } = req.body;
 
             // Create a new inventory document
             const newInventory = new Inventory({ 
                 productName: productTitle, 
-                quantity: Number(inventory) 
+                quantity: Number(inventory),
+                createdBy: req.admin.email,
+                createdOn: new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' }) 
             });
 
             // Save the inventory document
@@ -98,7 +102,10 @@ const productController = {
                 color,
                 keyFeatures: keyFeaturesArray,
                 size,
-                sku
+                sku,
+                subCategory,
+                createdBy: req.admin.email,
+                createdOn: new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' })
             });
 
             await product.save();
@@ -117,6 +124,13 @@ const productController = {
                 // Add the newly created product to the products array of the existing category
                 productCategory.products.push(product);
                 await productCategory.save();
+            }
+
+            const subCat = await ProductSubCategory.findById(subCategory).populate('products', 'name');
+
+            if (subCat) {
+              subCat.products.push(product);
+              await subCat.save();
             }
 
              // Set a timer to update isProductNew field after 48 hours
@@ -303,7 +317,7 @@ const productController = {
         try {
             const productId = req.params.id;
 
-            const product = await Product.findById(productId).populate('category', 'name').populate('review', 'rating comment date').populate('inventory', 'quantity')
+            const product = await Product.findById(productId).populate('category', 'name').populate('review', 'rating comment date').populate('inventory', 'quantity createdBy createdOn')
 
             if (!product) {
                 return res.status(404).json({message: 'Product not found'})
