@@ -18,10 +18,6 @@ const productSubCategorySchema = new mongoose.Schema({
         ref: "ProductCategory",
     },
 
-    // product: {
-    //     type: String
-    // },
-
     subCategoryImage: {
         type: String
     },

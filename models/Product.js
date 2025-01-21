@@ -68,6 +68,14 @@ const productSchema = new Schema({
     updatedAt: {
         type: Date,
         default: Date.now()
+    },
+
+    createdBy: {
+        type: String
+    },
+
+    updatedBy: {
+        type: String
     }
 
 });
