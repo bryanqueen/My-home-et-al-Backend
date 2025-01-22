@@ -33,7 +33,9 @@ const productCategoryController = {
             // If the category doesn't already exist, create a new one
             const newProductCategory = new ProductCategory({ 
                 name,
-                product_category_image: imageUrl
+                product_category_image: imageUrl,
+                createdBy: req.admin.email,
+                createdOn: new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' })
             });
             await newProductCategory.save();
     
@@ -43,6 +45,7 @@ const productCategoryController = {
             return res.status(500).json({ error: 'Internal server error' });
         }
     },
+
 
     getProductCategories: async (req, res) => {
         try {
@@ -105,7 +108,9 @@ const productCategoryController = {
             // Prepare update object starting with existing data
             const updateData = {
                 name: name || existingCategory.name,
-                product_category_image: existingCategory.product_category_image // Keep existing image by default
+                product_category_image: existingCategory.product_category_image, // Keep existing image by default
+                updatedBy: req.admin.email,
+                updatedOn: new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' })
             };
     
             // Only update image if a new file was uploaded

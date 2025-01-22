@@ -11,6 +11,19 @@ const inventorySchema = new Schema({
         type: Number,
         default: 0,
         min: 0
+    },
+    createdOn: {
+        type: String
+    },
+    createdBy: {
+        type: String
+    },
+    updatedOn: {
+        type: String
+    },
+    updatedBy: {
+        type: String
     }
+    
 })
 module.exports = Inventory = model('Inventory', inventorySchema )

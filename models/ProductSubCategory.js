@@ -13,26 +13,35 @@ const productSubCategorySchema = new mongoose.Schema({
         ref: "Product"
     }],
 
-    productCategories: [{
+    category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "ProductCategory",
-    }],
+    },
 
     subCategoryImage: {
         type: String
     },
 
-    createdBy: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Admin"
-    }], 
+    createdBy:  {
+        type: String
+    },
 
-    updatedBy: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Admin"
-    }],
+    updatedBy: {
+        type: String
+    },
 
-})
+    createdOn: { 
+        type: String, 
+        // default: Date.now
+    },
+
+    updatedOn: { 
+        type: String, 
+        // default: Date.now
+    }
+
+},  //{ timestamps: true } 
+)
 
 const productSubCategoryModel = mongoose.model('ProductSubCategory', productSubCategorySchema);
 
