@@ -857,7 +857,41 @@ const productController = {
         //     error: error.message
         //   });
         // }
-       }
+       },
+
+       viewProductsBySubCategory: async (req, res) => {
+        try {
+            // Get the sub-category id
+            const subCategoryId = req.params.id;
+    
+            // Retrieve subCategory by ID
+            const subCategory = await ProductSubCategory.findById(subCategoryId);
+    
+            // Check if the subCategory exists
+            if (!subCategory) {
+                return res.status(404).json({error: 'Product subCategory not found'});
+            }
+    
+            console.log('Product subCategory:', subCategory.name);
+            console.log('Number of products in subCategory:', subCategory.products.length);
+    
+            // Fetch all products in the sub-category
+            const products = await Product.find({_id: {$in: subCategory.products}}).populate('subCategory', 'name').populate('review', 'rating')
+    
+            console.log('Number of products fetched:', products.length);
+    
+            // Reverse the order of products
+            const reversedProducts = products.reverse();
+    
+             console.log('First product after reversal:', reversedProducts[0]?.productTitle);
+             console.log('Last product after reversal:', reversedProducts[reversedProducts.length - 1]?.productTitle);
+    
+            res.json(reversedProducts);
+        } catch (error) {
+            console.error('Error in viewProductsByCategory:', error);
+            return res.status(500).json({error: 'Oops! An error occurred, please refresh'});
+        }
+    },
 
 
 
