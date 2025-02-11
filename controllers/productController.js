@@ -872,21 +872,22 @@ const productController = {
                 return res.status(404).json({error: 'Product subCategory not found'});
             }
     
-            console.log('Product subCategory:', subCategory.name);
-            console.log('Number of products in subCategory:', subCategory.products.length);
-    
             // Fetch all products in the sub-category
-            const products = await Product.find({_id: {$in: subCategory.products}}).populate('subCategory', 'name').populate('review', 'rating')
-    
-            console.log('Number of products fetched:', products.length);
+            const products = await Product.find({_id: {$in: subCategory.products}})
+            .populate('subCategory', 'name')
+            .populate('review', 'rating')
+            .sort({ _id: -1 });
     
             // Reverse the order of products
-            const reversedProducts = products.reverse();
+            // const reversedProducts = products.reverse();
     
-             console.log('First product after reversal:', reversedProducts[0]?.productTitle);
-             console.log('Last product after reversal:', reversedProducts[reversedProducts.length - 1]?.productTitle);
-    
-            res.json(reversedProducts);
+            res.json({
+              subCategory: subCategory.name,
+              totalProducts: products.length,
+              // products: products.map(product => product.productTitle)
+              products: products
+              // products: products.map(product => product._id)
+          });
         } catch (error) {
             console.error('Error in viewProductsByCategory:', error);
             return res.status(500).json({error: 'Oops! An error occurred, please refresh'});
