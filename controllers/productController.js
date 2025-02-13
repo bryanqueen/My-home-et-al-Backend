@@ -318,7 +318,7 @@ const productController = {
         try {
             const productId = req.params.id;
 
-            const product = await Product.findById(productId).populate('category', 'name').populate('review', 'rating comment date').populate('inventory', 'quantity createdBy createdOn')
+            const product = await Product.findById(productId).populate('category', 'name').populate('review', 'rating comment date').populate('inventory', 'quantity createdBy createdOn').populate('subCategory', 'name')
 
             if (!product) {
                 return res.status(404).json({message: 'Product not found'})
@@ -366,7 +366,8 @@ const productController = {
                 keyFeatures,
                 size,
                 sku,
-                imagesToDelete
+                imagesToDelete,
+                subCategory,
             } = req.body;
     
             // Find the existing product by ID
@@ -421,6 +422,9 @@ const productController = {
             product.productTitle = productTitle || product.productTitle;
             product.price = price || product.price;
             product.category = category || product.category;
+
+            product.subCategory = subCategory || product.subCategory;
+
             product.description = description || product.description;
             product.images = imageUrls;
             product.brand = brand || product.brand;
@@ -431,13 +435,16 @@ const productController = {
             product.keyFeatures = keyFeaturesArray.length > 0 ? keyFeaturesArray : product.keyFeatures;
             product.size = size || product.size;
             product.sku = sku || product.sku;
+            product.updatedBy = req.admin.email;
+            product.updatedOn = new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' });
     
             // Save the updated product
             await product.save();
 
             // Populate the category for Algolia update
-            const populatedProduct = await Product.findById(product._id).populate('category');
+            const populatedProduct = await Product.findById(product._id).populate('category').populate('subCategory');
             const categoryName = populatedProduct.category?.name || '';
+            const subCategoryName = populatedProduct.subCategory?.name || '';
 
             // Update Algolia index with correct partial update structure
             // await client.partialUpdateObject({
@@ -473,7 +480,23 @@ const productController = {
                     await newCategory.save();
                 }
             }
-    
+
+            if (subCategory && subCategory !== product.subCategory.toString()) {
+              const oldSubCategory = await ProductSubCategory.findById(product.subCategory);
+              const newSubCategory = await ProductSubCategory.findById(subCategory).populate('products');
+  
+              // Remove product from old category
+              if (oldSubCategory) {
+                  oldSubCategory.products.pull(product._id);
+                  await oldSubCategory.save();
+              }
+  
+              // Add the product to the new category
+              if (newSubCategory) {
+                  newSubCategory.products.push(product);
+                  await newSubCategory.save();
+              }
+          }
             return res.status(200).json({ message: 'Product updated successfully', product });
         } catch (error) {
           console.log(error)
@@ -834,7 +857,42 @@ const productController = {
         //     error: error.message
         //   });
         // }
-       }
+       },
+
+       viewProductsBySubCategory: async (req, res) => {
+        try {
+            // Get the sub-category id
+            const subCategoryId = req.params.id;
+    
+            // Retrieve subCategory by ID
+            const subCategory = await ProductSubCategory.findById(subCategoryId);
+    
+            // Check if the subCategory exists
+            if (!subCategory) {
+                return res.status(404).json({error: 'Product subCategory not found'});
+            }
+    
+            // Fetch all products in the sub-category
+            const products = await Product.find({_id: {$in: subCategory.products}})
+            .populate('subCategory', 'name')
+            .populate('review', 'rating')
+            .sort({ _id: -1 });
+    
+            // Reverse the order of products
+            // const reversedProducts = products.reverse();
+    
+            res.json({
+              subCategory: subCategory.name,
+              totalProducts: products.length,
+              // products: products.map(product => product.productTitle)
+              products: products
+              // products: products.map(product => product._id)
+          });
+        } catch (error) {
+            console.error('Error in viewProductsByCategory:', error);
+            return res.status(500).json({error: 'Oops! An error occurred, please refresh'});
+        }
+    },
 
 
 
